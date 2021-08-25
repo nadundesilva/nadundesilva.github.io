@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "https://nadundesilva.github.io/static/css/main.6dea0f05.chunk.css",
-    "main.js": "https://nadundesilva.github.io/static/js/main.9ea43825.chunk.js",
-    "main.js.map": "https://nadundesilva.github.io/static/js/main.9ea43825.chunk.js.map",
+    "main.js": "https://nadundesilva.github.io/static/js/main.d19b2c61.chunk.js",
+    "main.js.map": "https://nadundesilva.github.io/static/js/main.d19b2c61.chunk.js.map",
     "runtime-main.js": "https://nadundesilva.github.io/static/js/runtime-main.ba785e80.js",
     "runtime-main.js.map": "https://nadundesilva.github.io/static/js/runtime-main.ba785e80.js.map",
     "static/js/2.79fb20ca.chunk.js": "https://nadundesilva.github.io/static/js/2.79fb20ca.chunk.js",
@@ -37,6 +37,6 @@
     "static/js/runtime-main.ba785e80.js",
     "static/js/2.79fb20ca.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.9ea43825.chunk.js"
+    "static/js/main.d19b2c61.chunk.js"
   ]
 }
