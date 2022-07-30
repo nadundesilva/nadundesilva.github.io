@@ -1,0 +1,137 @@
+import { BlogPostLayout } from "@/components/layout";
+
+export const meta = {
+    title: "Processing Java Annotations at compilation time",
+    publishedDate: "2018-10-27",
+    description:
+        "Reading custom annotations at compile-time for generating code, validating, etc.",
+    mainImage: {
+        src: "/assets/blog/processing-java-annotations-at-compilation-time/main.jpeg",
+        alt: "Processing Java Annotations at compilation time - Main Image",
+        blurDataURL:
+            "data:image/webp;base64,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",
+        source: {
+            author: "Maximilian Weisbecker",
+            authorUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2F%40maxweisbecker%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+            source: "Unsplash",
+            sourceUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fjava%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+        },
+    },
+};
+
+Java annotations can be used for storing metadata that would have an impact on how the programs would be executed.
+Apart from the annotations that are available in Java, you can write your own
+[Custom Annotations](https://nadundesilva.medium.com/java-custom-annotation-99eaf3b6cd7e) as well. However, these
+annotations would not have any effect on its own.
+
+To make use of the annotations, using Java Annotation Processors they need to be available at compile time. However,
+the good news is no specific modification needs to be done to achieve this.
+
+---
+
+# Let’s Start Coding
+
+## Implementing an Annotation Processor
+
+An annotation processor can be implemented by extending the `javax.annotation.processing.AbstractProcessor` class. The
+annotation processors are invoked during compile time and we can generate code, validate, etc. using it.
+
+```java
+public class AnnotationProcessorExample extends AbstractProcessor {
+    @Override
+    public synchronized void init(ProcessingEnvironment env) {
+        // Initialize the processor
+    }
+
+    @Override
+    public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
+        // Process the annotation
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        // Return the set of annotations supported
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        // Return the Java version supported
+    }
+}
+```
+
+-   **init():** This gives you instances of different utilities which are useful for code generation.
+
+    -   _Filler:_ Used to create new source, class, or auxiliary files.
+    -   _Messager:_ Used to report errors, warning and other notices.
+    -   _Element Utils:_ Utility methods used for operating on elements.
+    -   _Type Utils:_ Utility methods used for operating on types.
+    -   _Locale:_ If a Locale is in effect it will be provided. This can be useful if you are developing a Locale specific
+        application.
+
+-   **process():** We will have access to the class elements in this method. We can perform any changes to the source
+    files, validate code, generate code, etc. using this method.
+
+-   **getSupportedAnnotationTypes():** We need to return the list of annotations that are supported by this processor. The
+    elements to which the annotation processor will have access to is determined by this.
+
+-   **getSupportedSourceVersion():** The Java version the annotation processor is supposed to support.
+
+## Engaging the Annotation Processor
+
+### Using the Compiler Key
+
+If you are compiling your Java source code by invoking the `javac` command, you can using the `-processor` argument to
+engage the annotation processors. A comma separated list of annotation processors need to be passed to use the
+annotation processors at compile time.
+
+```bash
+javac -processor com.foo.FooProcessor,com.bar.BarProcessor MyClassWithAnnotations.java
+```
+
+### Using Maven
+
+If you are using Maven for building the source files, the following can be added to you `pom.xml` file to engage the
+annotation processor.
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
+            <configuration>
+                <!-- Other configurations -->
+                <annotationProcessors>
+                    <annotationProcessor>
+                        com.foo.FooProcessor
+                    </annotationProcessor>
+                </annotationProcessors>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+## Adding the Processor to the class path
+
+If you prefer the annotation processor to be picked up automatically, we need to add the fully qualified class names of
+the Annotation Processors to the `META-INF/services/javax.annotation.processing.Processor` file.
+
+```
+com.foo.FooProcessor
+com.bar.BarProcessor
+```
+
+The annotation processors are a real powerful tool in Java. It can enable the users to do advance manipulations and
+validations to the Java source at compile time. Don’t be disappointed if it seems to be hard at first. But with
+practice you will be able to use the annotation processor to reduce the required code lines significantly.
+
+Hope this was helpful.
+
+export default ({ children }) => (
+    <BlogPostLayout metadata={meta}>{children}</BlogPostLayout>
+);
