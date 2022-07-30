@@ -1,0 +1,252 @@
+import { BlogPostLayout } from "@/components/layout";
+
+export const meta = {
+    title: "Unleashing the Power of Java Custom Annotations",
+    publishedDate: "2018-10-26",
+    description: "Writing Java custom annotation",
+    mainImage: {
+        src: "/assets/blog/unleashing-the-power-of-java-custom-annotations/main.jpeg",
+        alt: "Unleashing the Power of Java Custom Annotations - Main Image",
+        blurDataURL:
+            "data:image/webp;base64,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",
+        source: {
+            author: "Lagos Techie",
+            authorUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2F%40heylagostechie%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+            source: "Unsplash",
+            sourceUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fprogramming%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+        },
+    },
+};
+
+I am quite certain that everyone is familiar with Java Annotations and at least you must have used the @Override
+annotation which is used to hint to the compiler that you have overridden the method in the parent class. In this post,
+I will be explaining how to write your own annotations so that you can make use of the power of annotations to improve
+your programs.
+
+---
+
+# Why Custom Annotations?
+
+The first thing you need to understand about annotations is that they do not add any new functionality on their own,
+but is only used for indicating some important information about the element that is annotated with it. Then why do we
+need annotations?
+
+Although annotations alone cannot do anything on their own, annotated data can be read using Java Reflections API at
+run-time or using Annotation Processors at compile-time. Moreover, like the `@Override` annotation, the annotations
+applied can be information for the Java compiler as well. This makes Annotations a powerful tool that is available to
+you as a Java programmer. (Don't worry if you do not know what are [Annotation Processors](https://medium.com/@nadundesilva/reading-annotations-at-compile-time-using-java-annotation-processors-f5a7604bb2f7)
+or [Java Reflections API](https://medium.com/@nadundesilva/reading-annotations-at-run-time-using-the-java-reflections-api-ce175ba43b2).
+You can check my posts on them if you wish to learn more.)
+
+Moreover, If you are writing Java libraries to be used by other programmers, Java Annotations will be quite handy.
+Especially, if you are writing a library which requires certain configurations to be made after extending an
+interface/abstract class you are providing, you can provide annotations that can be added to the child class rather
+than making the user make several method calls to make the configurations. This will provide a much clean code for the
+programmers using your library.
+
+However, this is not the only scenario where annotations can be useful and you will come across many situations where
+annotations are useful. Whatever way you use them, the power of the annotations is that it helps you to not repeat code
+and simply generate them at compile time or run specific code at run-time based on the annotations.
+
+---
+
+# Let’s Start Coding
+
+## A Simple Annotation
+
+Creating a custom annotation is as simple as writing a new class. The only difference is that `@interface` keyword
+needs to be used instead of the `class` keyword. Moreover, you will notice how the annotation type elements in the
+Annotations declaration (The method like declarations inside the annotation declaration) are written in a different
+manner.
+
+```java
+public @interface MyFirstAnnotation {
+    String foo();
+    int bar();
+}
+```
+
+Now that you have written your first custom annotation declaration, it is time annotate a class with this annotation.
+
+```java
+@MyFirstAnnotation(foo = "Foo Value", bar = 100)
+public class MyFirstAnnotatedClass {
+    // Class Elements
+}
+```
+
+You should notice how the annotation type elements we defined in the annotation declaration needs to be passed when
+annotating.
+
+Congratulations! You now know how to create a custom annotation class. However, there is more to creating an annotation
+than what is shown above.
+
+---
+
+# Diving deeper into Annotations
+
+## Annotations with Single Annotation Type Element
+
+You may have noticed that when applying the annotation we created, the annotation type elements need to be passed as
+`typeName = typeValue`. However, if only one annotation type element is present in the annotation you can declare the
+annotation as follows so that only the value needs to be passed.
+
+```java
+public @interface SingleElementAnnotation {
+    String value();
+}
+@SingleElementAnnotation("Single Value")
+public class AnnotatedClass {
+    // Class Elements
+}
+```
+
+Note that the annotation type element in the annotation you created needs to be named as value. Otherwise, the value
+needs to be passed the same way as before as shown below.
+
+```java
+public @interface SingleElementAnnotation {
+    String foo();
+}
+@SingleElementAnnotation(foo = "Single Value")
+public class AnnotatedClass {
+    // Class Elements
+}
+```
+
+## Specifying the Target Element
+
+In the first example, although we added the annotation to a class, it can be applied to any element; class, interface,
+method, parameter, constructor, etc. This is the default behavior of the annotations.
+
+However, in most of the scenarios you come across, there will be a specific type of element which will be annotated by
+the annotation and annotating any other element will be invalid. In this case, you can restrict the target element by
+using the `[@Target](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html)` annotation. This
+annotation needs to be applied to the annotation declaration (Yes guys you heard me right. Annotations can be applied
+to annotation declarations as well.) and the target [element types](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html)
+should be passed into it. A small example is shown below.
+
+```java
+@Target(ElementType.TYPE)
+public @interface TargetRestrictedAnnotation {
+    String foo();
+    int bar();
+}
+```
+
+The annotation shown above can only be applied to classes, interfaces and annotation declarations.
+
+There are several element types that can be passed into the `@Target` annotation restricting the target element types.
+
+-   ANNOTATION_TYPE — Annotation type declaration
+-   CONSTRUCTOR — Constructor declaration
+-   FIELD — Field declaration (including enum constants)
+-   LOCAL_VARIABLE — Local variable declaration
+-   METHOD — Method declaration
+-   PACKAGE — Package declaration
+-   PARAMETER — Parameter declaration
+-   TYPE — Class, interface (including annotation type), or enum declaration
+
+You can even pass an array of element types as well when the annotation can be applied to more than one of the element
+types.
+
+```java
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface TargetRestrictedAnnotation {
+    String foo();
+    int bar();
+}
+```
+
+Moreover, there can be scenarios where you have annotations declared solely to be passed into other complex annotations
+and they should not be applied to any element directly. This can be addressed by passing an empty array to the
+`@Target` annotation as shown below.
+
+```java
+@Target({})
+public @interface SimpleAnnotation {
+    int count();
+}
+@Target(ElementType.TYPE)
+public @interface ComplexAnnotation {
+    String foo();
+    SimpleAnnotation bar();
+}
+@ComplexAnnotation(
+    foo = "Foo Value",
+    bar = @SimpleAnnotation(count = 100)
+)
+public class MyAnnotatedClass {
+    // Class Elements
+}
+```
+
+If the `@Target` annotation had not been used, the default behavior will be available for the annotation you have
+created, i.e. the annotation you created can be applied to any element type.
+
+However, we may need to specify the retention policy where we might not need the annotations in the class files or we
+need them at runtime to be read by a program. This can be done by adding the `[@Retention](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html)`
+annotation and passing the [retention policy](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html)
+into it.
+
+```java
+@Retention(RetentionPolicy.SOURCE)
+public @interface RetentionRestrictedAnnotation {
+    String foo();
+    int bar();
+}
+```
+
+The annotation shown above will not be added to the class files generated by the compiler.
+
+There are three types of retention policies that can be specified for the custom annotations that you create.
+
+-   SOURCE — Discarded by the compiler
+-   CLASS — Recorded in the class files by the compiler but not retained by the JVM at run-time
+-   RUNTIME — Recorded in the class file by the compiler and retained by the JVM at run-time
+
+I will be writing another post to introduce you to Reflections API which can be used for reading annotations at run
+time when the `@Retention(RetentionPolicy.RUNTIME)` annotation is used.
+
+When the `@Retention(RetentionPolicy.SOURCE)` annotation is used, since they are not added to the class files, an
+Annotation Processor would normally be used so that the annotations can be read at compile time and either an error
+could be thrown or extra byte code could be generated using the annotated data.
+
+## Repeatable Annotations
+
+The annotations we created until now can be applied only once to a particular class declaration. i.e. the annotations
+cannot be repeated in the same class declaration by default.
+
+However, you may find scenarios where you may want to allow multiple annotations to be applied to the same class
+declaration by adding the `[@Repeatable](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Repeatable.html)`
+annotation. To use this annotation, a "containing annotation type" is required which has a single annotation type
+element with the name as `value` and type as an array of the annotation type you created that needs to be repeated.
+Moreover, the containing annotation class object needs to be passed into the `@Repeatable` annotation. An example is
+shown below.
+
+```java
+public @interface Parameters {
+    Parameter[] value();
+}
+@Repeatable(Parameters.class)
+public @interface Parameter {
+    String name();
+    String type();
+}
+@Parameter(name = "timestamp", type = "datetime")
+@Parameter(name = "username", type = "string")
+public class FunctionOperation {
+    // Class Elements
+}
+```
+
+In the above example, `@Parameter` is the actual repeatable annotation and the `@Parameters` is the container
+annotation created for it.
+
+That concludes this post. Please feel free to contact me if there are any problems.
+
+export default ({ children }) => (
+    <BlogPostLayout metadata={meta}>{children}</BlogPostLayout>
+);

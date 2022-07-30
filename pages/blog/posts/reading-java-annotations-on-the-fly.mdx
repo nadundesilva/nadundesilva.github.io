@@ -1,0 +1,206 @@
+import { BlogPostLayout } from "@/components/layout";
+
+export const meta = {
+    title: "Reading Java Annotations on the fly",
+    publishedDate: "2018-10-25",
+    description:
+        "Using Java Reflections API to read annotations and perform actions based on them.",
+    mainImage: {
+        src: "/assets/blog/reading-java-annotations-on-the-fly/main.jpeg",
+        alt: "Reading Java Annotations on the fly - Main Image",
+        blurDataURL:
+            "data:image/webp;base64,UklGRmoKAABXRUJQVlA4WAoAAAAgAAAANgMAJAIASUNDUBgCAAAAAAIYAAAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAHRyWFlaAAABZAAAABRnWFlaAAABeAAAABRiWFlaAAABjAAAABRyVFJDAAABoAAAAChnVFJDAAABoAAAAChiVFJDAAABoAAAACh3dHB0AAAByAAAABRjcHJ0AAAB3AAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAFgAAAAcAHMAUgBHAEIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z3BhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABYWVogAAAAAAAA9tYAAQAAAADTLW1sdWMAAAAAAAAAAQAAAAxlblVTAAAAIAAAABwARwBvAG8AZwBsAGUAIABJAG4AYwAuACAAMgAwADEANlZQOCAsCAAAUJ4AnQEqNwMlAj7tdLFVOjMqIyJSKfNAHYlpbuFou4z/p51SK5Ro/1M+N14JI073M+QDBAwcjkeiTBfK1v4mlbdUzBHBJPRjO05wyDIQMHQzftbvWMI6L4P7ZqxSJXD0rwwhP32kqOmGtx116pihRNxf5FDuns9la+EnH7FmpvWleJVgQlfSMmK3BZLADlSuJhlD9ol8HR4XEBOAT6KtFYuUjbGJatynynTHeu/fnlSuJduH7FmptEG1Jrrcs3TYX9F/PUB0npJj1xCk/nRDV/Nr2/d3mrGaxWBT1uWRMZc1Jrrcs2fvDfdXosH+71i5JP6wsB6PP03afHh07PJo1k1JrrcsiYy5qTXW5ZEx5Q9nQH+71lMH+71i5cQf7vNV1uRMZc1JrrcsiYy5qTXW6h3ho1k4c8paT0Xslkn6rE29PcpzmswqDLmpNdblkTGXNSa63LImMub4aeSmbD6rZZ65JPz8su0XKP1GEVeSulr+hTfT1uWRMZc1JrrcsiYy5qW75KZsMBeOmjLmpNPojmRyreHcUuak12UP52+o763LImMuak11uWRMZc1JrsSH723QpuqXaMuXs12UdCnBOVFjsow3TyM8Eoy5qTXW5ZExlzUmutyxv+RMX9vlFu10b8shS2RcsiYy5xsdExlzR3yOFp3NfOQa/oU4OYrbciYy5qTWtAjfmCqV8jEILZF53pVZbqeyh/5zoVyRaUa+P+Z5nmeZ5nmd/5rrm8NHoT1PW5ZExmH+BG/MxoVSvkb8wMdgDGvrjWl6veIXDNouUAL9WOzLc9V0KEgTo1o+m+pdov7fKF6BG/MFUTqG5Aqk07IQMISsOyo5HIQMgyEDBwnHcJ1K+RvzBVK+XiwdfI6tAgUHWn1b/47NwgYORyEDIMhAwcjc+QvQFn1YFUTqHWEKn5z3jV8d/BIMhAwcjkIGQZCBg5HIQMgeJo+qfhB15z09fDPJbUriKH4OSzwCc4ZBkIGDkchAyDIQMF+4iQtpwVTEd/IJyOSyIJhwyDIQMHI5CBkGQgYORvTarfJ8tdSR5wyDIpXCBkGQgYORyEDIMhAwcjkvn7GViJSATP/HyQcjkIGQZCBg5HIQMgyEDByOQgbnwe3QMHQzTDsqORyEDIMhAwcjkIGQZADgirSFUhKw7KjkchAyDIQMHI5CBkGQgYORx4t8GKNbFhxEDkchAyDIQMHI5CBkGQgYORyEDIH0Ly0oXpCq0r42ujRSPOGQZCBg5HIQMgyEDByOQgZA+lc/MFUrTODgRvzMbnBnRY8pWHZUcjkIGQZCBg5HIQMgx+1+xkL3blh8Ke1yBXT0UZNBbXac4ZBkIGDkchAyDIQMHI48QI1k1MPFhwgQ9muttMFdHkP2LZ+rDUw7KjkchAyDIQMHI3sZcuXGXWRmvu7DnlzUmibfgfIoedJUcjkIGQZCBg5HIQMgjpC8PbW6W3k2CB4d8TTabmCNEB3A6HN1T4ORyEDIMhAwcjkIGRIT+sLAjHYdVWZqycNKkraq21KuCb0/U+DkchAyDIQMHI5BtsT5teoPaQDHST+qvUVacFdhVfDYJHnDIMhAwcjkIGQTPL4yFrEAq/zFz27zkbpbPE845CBkGQgYORyEDIJn1P7YJPn2ufNVKgzETt9VunnDIMhAwcjkIGPAvyVQLX+ZdeXy3FabnlPNV831AwcjkIGQZCBgxykAAP73pT2U42x9dL9IgitmbH9cWbzC/RjHl/o3Koun+i71s0rPmZ+aIa0UPajIPNlNCMnkklTYPdUllOF66oP9aX/67NyXwC5XVgHedFhSYphW83doqQUkoQkfi1Rt4r3rT1tKmlfBWZ6/A1ECExEmKAc/Q1UtS1JEiy6Bm7+XCIUJIbj1P7mZQGUhjyAIYWip3hUPFMzMqMVYSjl7aorl5aYFOyYsHXxh64SCfcWvrGs7GILr5uOtgHbhvx/8cdm40oEeC+4IVTArZsOdNUttq28nbQx9KZoXdj8kBxKGjlskEZIqPgCMDqXoXZ78qljHsPBPg+PrwArVlOpmCjVCszU/CrlihX0bDbH5WGgf4G9V4Esr7T26S27v/ClxtK7Wc3ST4OL9BBLg4Kgp38HXZRFO4AoVbV4Vx6/J06WfDg+WMITI2O0KJd0x8ErBzhQved5OEW9SklI5XwhRgEh4+BIlJiBIsYgSs9MNjHUJFh+q3vgO9awc8aKnx3WIgvSxVgmhpjcw4QAAeP/qQn8rzLuijqm0fnbwX4J2DuMjnTy8HPI9mwFgAAvdqQiABqxo7QyJUgAZ+dXzCrLzwxqDHb1zHZ7CABwtQjYXuJ/8pSD1rNuEhNRlup09bomGtbzIpxhoin1zvJGe9qicAQAXpFLXlbEruco1lQodKIDft0/FXAkSmdsp3sG0G6Ano0IAGVAxQa1QAu/CVW7V7VPPTWRclb5YIAEWem6lzgHUVHNKntsG8uAgAFtpJ6tnAAACzjCEAAB29HCVE4AABn7ZQfkpGQA10RqbQAAC6RGcVqRYpT+sxZsAOnRB+SiEQHwrUGWVJgEAALwsmt8t07tu2tKL/cOXcRjlypPtCshHRy3BAAKm26Uo0NNMZqicPqPX8a8HdY9wfAAgc6KMFlb3Olt5qRGbXt6U3RUwLTXytIQACSCFh3yWq1dVIRr2uRJmGDEegA8O6RTmVWAPo13Y+U15l7D8AG9Y+Ii8LSp58X1+v4AB3racYuzstTtjbgANgN3qAy6SzeXzc6oGYDZIAFnFfHKvDCchCRLm1HQl4AfUzky2DSlRRFoMATl2VwAAAA==",
+        source: {
+            author: "Clément Hélardot",
+            authorUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2F%40clemhlrdt%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+            source: "Unsplash",
+            sourceUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fprogramming%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+        },
+    },
+};
+
+Java Reflections API allows the code you write to inspect another piece of code. This gives you immense power over the
+programs you write, even to the extent of invoking private functions in a class. However, this kind of usage of the
+Java Reflections API is highly discouraged.
+
+In this post, we will be focusing on using the Java reflections API for reading the annotations applied to a class.
+This can be useful if your code needs data that is stored in the annotations applied such as metadata for configuring
+a library you are implementing. However, you should note that using the reflections API can have a performance impact
+and you should try as much as possible to use it less often (For example, if you are working on a performance critical
+system which needs the annotated data frequently, a possible solution might be to read the annotations at startup of
+the program and store them in memory to be accessed later.)
+
+---
+
+# Let’s start Coding
+
+For us to use the reflections API to read annotations, the annotations should be stored in the class files by the
+compiler and loaded into the JVM at run-time.
+
+Annotations by default are retained in the class files but they are not loaded into the JVM at run-time. Therefore to
+make sure that the annotations are stored in the class files and that they are loaded into the JVM at run-time, the
+`[@Retention(RetentionPolicy.RUNTIME)](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME)`
+annotation needs to be applied to the declaration of the annotation that you wish to read at compile time.
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuntimeRetainedAnnotation {
+    String foo();
+    int bar();
+}
+```
+
+Now, any data annotated with the `@RuntimeRetainedAnnotation` annotation can be read at runtime, using Java
+reflections.
+
+If you want to learn more about writing your own annotations, check my post explaining how to write Java
+[Custom Annotations](https://medium.com/@nadundesilva/java-custom-annotation-99eaf3b6cd7e).
+
+## Reading Annotations
+
+All the elements to which annotations can be applied, by default implements the `AnnotatedElement` interface. The
+`AnnotatedElement` interface has all the methods that are required for reading the annotations. Therefore for reading
+annotations we first need to get hold of the annotated element which contains the annotations that you wish to inspect.
+
+## Getting hold of the Annotated Element
+
+Getting hold of the annotation element can be done using the Java Reflections API as well.
+
+To show how to get hold of the Annotated Element, we will be using the following class as an example. Note that we need
+to get hold of the `fooValue` parameter in the `setFoo(Integer fooValue)` method which is the annotated element that we
+need.
+
+```java
+public class MyClass {
+    private Integer fooValue;
+
+    public void setFoo(@MyAnnotation(bar = "BarValue", maxLength = 200) Integer fooValue) {
+        this.fooValue = fooValue;
+    }
+    // Other Class Elements
+}
+```
+
+You first need to get hold of the Class object. Which can be done as shown below.
+
+```java
+Class classElement = MyClass.class;
+```
+
+After getting hold of the class, you can inspect its elements to get hold of the Annotated Element. Since you know the
+Class you can directly access the `setFoo(int fooValue)` method and from that the `fooValue` parameter as shown below.
+
+```java
+Parameter fooValueParameter = null;
+try {
+    // Getting the method object
+    Class[] args = new Class[1];
+    args[0] = Integer.class;
+    Method setFooMethod = classElement.getMethod("setFoo", args);
+    // Getting the parameter object
+    fooValueParameter = method.getParameters()[0];
+} catch () {
+    // Handle Exception
+}
+```
+
+Please note that depending on the element that is annotated you may have to call several methods to get hold of the
+element which could be different from what is shown above. But you can find all the relevant methods in the Reflection
+methods provided in Java.
+
+All the methods that can be used are not included here and only guidance is provided for getting hold of the relevant
+`AnnotatedElement`. You can find the relevant methods in Java documentation for each element when you need to access
+another element.
+
+## Reading the Annotations applied to an Annotated Element
+
+Now that you have the parameter object you can now get the annotation added to this element.
+
+As mentioned before all classes implementing the `AnnotatedElement` interface contains all the relevant methods required
+for reading annotations and all the classes of the objects we got hold of before implements it like many other elements
+that can be acquired in that manner.
+
+Let's assume that the `MyAnnotation` annotation added to the `fooValue` parameter is defined as shown below.
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    String bar();
+    int maxLength();
+}
+```
+
+Since you have got hold of the `Parameter` object before, you can now do the following to read the `bar` and
+`maxLength` values annotated in the parameter.
+
+```java
+MyAnnotation annotation = fooValueParameter.getAnnotation(MyAnnotation.class);
+String bar = annotation.bar();
+int maxLength = annotation.maxLength();
+```
+
+## Reading Repeatable Annotations
+
+Before reading this section, if you are not familiar with Repeatable Annotations you can read the repeatable
+annotations section in my post; Java Custom Annotations.
+
+We will be using the following annotation declaration and class as an example.
+
+```java
+public @interface Parameters {
+    Parameter[] value();
+}
+@Repeatable(Parameters.class)
+public @interface Parameter {
+    String name();
+    String type();
+}
+@Parameter(name = "timestamp", type = "datetime")
+@Parameter(name = "username", type = "string")
+public class FunctionOperation {
+    // Class Elements
+}
+```
+
+To access the annotation object in the `FunctionOperation` class we can do the following.
+
+```java
+Class classElement = FunctionOperation.class;
+Parameters parameters = classElement.getAnnotation(Parameters.class);
+Parameter[] parameterArray = parameters.value();
+String timestampName = parameterArray[0].name();
+String timestampType = parameterArray[0].type();
+String usernameName = parameterArray[1].name();
+String usernameType = parameterArray[1].type();
+```
+
+Note that `Parameters` is the container annotation type of `Parameter` annotation type and that you have to access the
+repeated annotations using container annotation.
+
+If there’s only a single repeatable annotation applied to the class as shown below, the way you can access the
+annotation is a bit different.
+
+```java
+@Parameter(name = "username", type = "string")
+public class FunctionOperation {
+    // Class Elements
+}
+```
+
+If this is the case if you access the container annotation you will get `null`. Therefore you need to access the
+annotation the same way you did for non-repeatable annotations.
+
+```java
+Class classElement = FunctionOperation.class;
+Parameter parameter = classElement.getAnnotation(Parameter.class);
+String name = parameter.name();
+String type = parameter.type();
+```
+
+That concludes this post. Please feel free to contact me if there are any problems.
+
+export default ({ children }) => (
+    <BlogPostLayout metadata={meta}>{children}</BlogPostLayout>
+);

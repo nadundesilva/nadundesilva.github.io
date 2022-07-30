@@ -13,6 +13,7 @@
 import fs from "fs";
 import path from "path";
 
+import { Masonry } from "@mui/lab";
 import {
     Card,
     CardActionArea,
@@ -58,45 +59,49 @@ const Blog = ({ posts }: BlogProps): React.ReactElement => {
             </Head>
             <Layout>
                 <LayoutContent>
-                    {orderedPosts.map(
-                        (post): React.ReactElement => (
-                            <Card key={post.file} sx={{ maxWidth: 345 }}>
-                                <Link href={`/blog/posts/${post.file}`}>
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            image={post.metadata.mainImage.src}
-                                            alt="green iguana"
-                                        />
-                                        <CardContent>
-                                            <Typography
-                                                gutterBottom
-                                                variant="h6"
-                                                component="div"
-                                            >
-                                                {post.metadata.title}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                color="text.secondary"
-                                            >
-                                                {post.metadata.description}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                color="text.secondary"
-                                                sx={{ fontSize: 12, pt: 1 }}
-                                            >
-                                                Published on{" "}
-                                                {post.metadata.publishedDate.toDateString()}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Link>
-                            </Card>
-                        ),
-                    )}
+                    <Masonry columns={4} spacing={2}>
+                        {orderedPosts.map(
+                            (post): React.ReactElement => (
+                                <Card key={post.file} sx={{ maxWidth: 345 }}>
+                                    <Link href={`/blog/posts/${post.file}`}>
+                                        <CardActionArea>
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                image={
+                                                    post.metadata.mainImage.src
+                                                }
+                                                alt="green iguana"
+                                            />
+                                            <CardContent>
+                                                <Typography
+                                                    gutterBottom
+                                                    variant="h6"
+                                                    component="div"
+                                                >
+                                                    {post.metadata.title}
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                >
+                                                    {post.metadata.description}
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                    sx={{ fontSize: 12, pt: 1 }}
+                                                >
+                                                    Published on{" "}
+                                                    {post.metadata.publishedDate.toDateString()}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Link>
+                                </Card>
+                            ),
+                        )}
+                    </Masonry>
                 </LayoutContent>
             </Layout>
         </Container>
