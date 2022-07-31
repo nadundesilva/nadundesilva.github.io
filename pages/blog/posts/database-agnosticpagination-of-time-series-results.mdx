@@ -69,34 +69,34 @@ if only an error is returned without a partial results set, the algorithm can st
 
 **Algorithm:**
 
-```
- 1: current_start_time = start_time
- 2: while True:
- 3:    has_reached_server_side_limit = False
- 4:    rows = []
- 5:    try:
- 6:       rows = query_database(current_start_time, end_time, limit)
- 7:    except Exception as err:
- 8:       if is_server_side_limit_error(err):
- 9:          has_reached_server_limit = True
-10:          rows = err.partial_results.rows  # Partial results set
-11:       else:
-12:          raise err
-13:    row_count = size_of(rows)
-14:    if row_count == limit or has_reached_server_side_limit:
-15:       last_timestamp = timestamp_of(rows[row_count - 1])
-16:       i = size_of(rows)
-17:       while i > 0 && timestamp_of(rows[i-1]) == last_timestamp:
-18:         i--
-19:       if i == 0:
-20:         raise Error("Unsupported condition: limit too small")
-21:       rows = rows[0:i] # Dropping all rows with last timestamp
-22:       current_start_time = last_timestamp
-23:       process(rows)
-24:    else:
-25:       if row_count > 0:
-26:          process(rows)
-27:       break
+```python
+current_start_time = start_time
+while True:
+    has_reached_server_side_limit = False
+    rows = []
+    try:
+        rows = query_database(current_start_time, end_time, limit)
+    except Exception as err:
+        if is_server_side_limit_error(err):
+            has_reached_server_limit = True
+            rows = err.partial_results.rows  # Partial results set
+        else:
+            raise err
+    row_count = size_of(rows)
+    if row_count == limit or has_reached_server_side_limit:
+        last_timestamp = timestamp_of(rows[row_count - 1])
+        i = size_of(rows)
+        while i > 0 && timestamp_of(rows[i-1]) == last_timestamp:
+            i--
+        if i == 0:
+            raise Error("Unsupported condition: limit too small")
+        rows = rows[0:i] # Dropping all rows with last timestamp
+        current_start_time = last_timestamp
+        process(rows)
+    else:
+        if row_count > 0:
+            process(rows)
+        break
 ```
 
 # Explanation

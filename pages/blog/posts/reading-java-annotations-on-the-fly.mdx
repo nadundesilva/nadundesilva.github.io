@@ -41,7 +41,7 @@ compiler and loaded into the JVM at run-time.
 
 Annotations by default are retained in the class files but they are not loaded into the JVM at run-time. Therefore to
 make sure that the annotations are stored in the class files and that they are loaded into the JVM at run-time, the
-[`@Retention(RetentionPolicy.RUNTIME`)](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME)`
+[`@Retention(RetentionPolicy.RUNTIME`)](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME)
 annotation needs to be applied to the declaration of the annotation that you wish to read at compile time.
 
 ```java
@@ -79,6 +79,7 @@ public class MyClass {
     public void setFoo(@MyAnnotation(bar = "BarValue", maxLength = 200) Integer fooValue) {
         this.fooValue = fooValue;
     }
+
     // Other Class Elements
 }
 ```
@@ -99,6 +100,7 @@ try {
     Class[] args = new Class[1];
     args[0] = Integer.class;
     Method setFooMethod = classElement.getMethod("setFoo", args);
+
     // Getting the parameter object
     fooValueParameter = method.getParameters()[0];
 } catch () {
@@ -152,11 +154,13 @@ We will be using the following annotation declaration and class as an example.
 public @interface Parameters {
     Parameter[] value();
 }
+
 @Repeatable(Parameters.class)
 public @interface Parameter {
     String name();
     String type();
 }
+
 @Parameter(name = "timestamp", type = "datetime")
 @Parameter(name = "username", type = "string")
 public class FunctionOperation {

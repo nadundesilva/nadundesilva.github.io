@@ -97,6 +97,7 @@ annotation as follows so that only the value needs to be passed.
 public @interface SingleElementAnnotation {
     String value();
 }
+
 @SingleElementAnnotation("Single Value")
 public class AnnotatedClass {
     // Class Elements
@@ -110,6 +111,7 @@ needs to be passed the same way as before as shown below.
 public @interface SingleElementAnnotation {
     String foo();
 }
+
 @SingleElementAnnotation(foo = "Single Value")
 public class AnnotatedClass {
     // Class Elements
@@ -123,7 +125,7 @@ method, parameter, constructor, etc. This is the default behavior of the annotat
 
 However, in most of the scenarios you come across, there will be a specific type of element which will be annotated by
 the annotation and annotating any other element will be invalid. In this case, you can restrict the target element by
-using the [`@Target`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html)` annotation. This
+using the [`@Target`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html) annotation. This
 annotation needs to be applied to the annotation declaration (Yes guys you heard me right. Annotations can be applied
 to annotation declarations as well.) and the target [element types](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html)
 should be passed into it. A small example is shown below.
@@ -169,11 +171,13 @@ and they should not be applied to any element directly. This can be addressed by
 public @interface SimpleAnnotation {
     int count();
 }
+
 @Target(ElementType.TYPE)
 public @interface ComplexAnnotation {
     String foo();
     SimpleAnnotation bar();
 }
+
 @ComplexAnnotation(
     foo = "Foo Value",
     bar = @SimpleAnnotation(count = 100)
@@ -187,7 +191,7 @@ If the `@Target` annotation had not been used, the default behavior will be avai
 created, i.e. the annotation you created can be applied to any element type.
 
 However, we may need to specify the retention policy where we might not need the annotations in the class files or we
-need them at runtime to be read by a program. This can be done by adding the [`@Retention`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html)`
+need them at runtime to be read by a program. This can be done by adding the [`@Retention`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html)
 annotation and passing the [retention policy](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html)
 into it.
 
@@ -220,18 +224,20 @@ The annotations we created until now can be applied only once to a particular cl
 cannot be repeated in the same class declaration by default.
 
 However, you may find scenarios where you may want to allow multiple annotations to be applied to the same class
-declaration by adding the [`@Repeatable`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Repeatable.html)`annotation. To use this annotation, a "containing annotation type" is required which has a single annotation type element with the name as`value`and type as an array of the annotation type you created that needs to be repeated. Moreover, the containing annotation class object needs to be passed into the`@Repeatable` annotation. An example is
+declaration by adding the [`@Repeatable`](https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Repeatable.html)annotation. To use this annotation, a "containing annotation type" is required which has a single annotation type element with the name as`value`and type as an array of the annotation type you created that needs to be repeated. Moreover, the containing annotation class object needs to be passed into the`@Repeatable` annotation. An example is
 shown below.
 
 ```java
 public @interface Parameters {
     Parameter[] value();
 }
+
 @Repeatable(Parameters.class)
 public @interface Parameter {
     String name();
     String type();
 }
+
 @Parameter(name = "timestamp", type = "datetime")
 @Parameter(name = "username", type = "string")
 public class FunctionOperation {
