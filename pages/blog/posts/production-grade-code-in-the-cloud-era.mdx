@@ -1,0 +1,218 @@
+import { BlogPostLayout } from "@/components/layout";
+
+export const meta = {
+    title: "Production Grade Code in the Cloud Era",
+    publishedDate: "2021-11-03",
+    description:
+        "Best practices for running production grade code in the cloud.",
+    mainImage: {
+        src: "/assets/blog/production-grade-code-in-the-cloud-era/main.jpeg",
+        alt: "Production Grade Code in the Cloud Era - Main Image",
+        blurDataURL:
+            "data:image/webp;base64,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",
+        source: {
+            author: "Fatos Bytyqi",
+            authorUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2F%40fatosi%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+            source: "Unsplash",
+            sourceUrl:
+                "https://medium.com/r/?url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fprogramming%3Futm_source%3Dunsplash%26utm_medium%3Dreferral%26utm_content%3DcreditCopyText",
+        },
+    },
+};
+
+I have always thought that writing code is more than merely writing a set of instructions for a computer to follow.
+Programming can be graceful, meaningful and quite beautiful in the hands of a proper programmer. However, becoming a
+skilled programmer takes experience and many lessons learnt over the years (so don't be too hard on yourself).
+
+Kubernetes, Docker and cloud technologies in general had changed the expectations of applications running in
+production. As developers, we would not have full access to applications in production environments due to various SRE
+and security reasons. With all these considerations, writing better code is more important than ever.
+
+In this article, I thought of sharing my thoughts based on experience in writing code as well as reviewing code, as a
+developer as well as a team lead, in the industry working on multiple large scale cloud native applications. Moreover,
+this article includes several well established practices along with my thoughts on this subject. While I may not go
+into depth into each area, I hope this will help you get started in thinking like a pro.
+
+Without further ado, let's get started.
+
+# Handling Errors
+
+Expected as well as unexpected errors will occur in software running in production. For example, while you may not
+encounter errors such as connection failures in development time, these are more common than you think in production.
+Therefore, handling these in graceful ways is quite important.
+
+![Not found error](//assets/blog/production-grade-code-in-the-cloud-era/not-found-error.jpeg)
+
+While the exact way to handle these will change based on language and framework you are using, there are few things to
+keep in mind when it comes to handling errors in a production environment.
+
+-   Either return (or throw based on the language you are using) or log errors properly — never ignore errors. Most
+    frameworks and languages will explicitly specify errors that may occur and it’s important to handle these without
+    simply ignoring them.
+-   Only return the bare minimum details (never return all the error details or any of the stack trace in exceptions /
+    errors) back to the end users as otherwise it will expose unnecessary internal information to malicious users. At this
+    point, it is important to log all the information as error logs so that the errors can be debugged if needed.
+-   It can be quite useful to add a catch-all error handler at the base of the resource / function (in some frameworks
+    you can handle this easily — for example using interceptors for HTTP resources) in your service to handle any
+    unexpected and unknown errors that may occur. It is acceptable to send a generic error such as “Unknown Error” to the
+    user in these scenarios, if all the information required for debugging is properly logged.
+
+# Graceful Shutdown
+
+In many applications, we use resources (e.g.:- opened files, data base connections) which needs to be cleaned up or we
+may have incoming user requests / tasks which needs to be completed. In a proper application, we need to handle these
+gracefully without abruptly stopping them when an application is shutting down.
+
+In kubernetes specially, restarts of applications can be a common occurrence. Generally, Kubernetes or any management
+software which looks after your applications, will send SIGTERM OS signal (or SIGKILL when immediate shutdown is
+required), when it wants to force shutdown an application. These can be quite common due to many reasons such as node
+maintenance tasks in data centers.
+
+As developers, we should handle these shutdown requests gracefully (for example in Java you can use shutdown hooks to
+handle this) and cleanup and complete any currently running tasks so that the users are impacted less in such
+situations.
+
+# Think like a Hacker
+
+Security is an important aspect which cannot be stressed enough in cloud native applications. While there are many best
+practices built around security such as usage of prepared statements in databases, there is still a lot more to improve
+around security.
+
+While we can spend several articles covering the different ways security can be compromised in an application, there is
+one important thing when it comes to security.
+
+_Think like a Hacker_
+
+![Hacker](//assets/blog/production-grade-code-in-the-cloud-era/hacker.jpeg)
+
+As humans, we tend to not see issues in our own work. However, training yourself to think of different ways of how you
+as a hacker can exploit your application can help you identify many security holes.
+
+Especially take care and examine the points of interactions that are exposed to the users, as it can impact the result
+and side effects of your application. For example the values provided for query parameters in an HTTP service may allow
+users to get information of other users if a proper authorization logic is not implemented.
+
+Most importantly, think how you can change the behavior of your application using the inputs provided into your
+application. When you put on the hat of a hacker for this, stepping outside the box of your use case and changing your
+goal to break the system, would help you make your applications more and more secure.
+
+# Observable Applications
+
+In many large companies, due to various security and SRE concerns, even developers themselves would not have full
+access to their applications running in production. This can lead to many nights spent trying to figure out why your
+application is failing in production.
+
+![Panic](//assets/blog/production-grade-code-in-the-cloud-era/panic.jpeg)
+
+This is where _Observability_ comes into the picture.
+
+For an application to be observable, it should be possible to infer its internal state based on its outputs. There are
+three main ways to achieve this without compromising the user experience, performance and security of an application.
+
+## Logs
+
+Logs are an important part of any application and you should be careful in selecting a proper logging framework from
+the start. In general all important events happening in the application should be logged (selecting the proper log
+level for your logs to not overwhelm log collection agents is important as well).
+
+-   Always add as much context details as possible including IDs or any other information that would help you debug the
+    error — do not assume that you will be able to debug your code in production.
+-   Use a request / task ID — since many applications need to handle concurrent requests, it can be hard to distinguish
+    logs printed from one request from another without an ID to correlate logs together. A random UUID generated for
+    each of these concurrent requests / tasks would be the solution for this issue.
+-   Use log levels wisely — it can be quite costly (in terms of money as well as performance) to write logs in
+    production environments. Moreover, properly marking warning and error logs can help SRE to identify issues easily.
+-   Use debug logs with information required for debugging — Since it’s general practice to only enable info log level
+    in production, you can log all the actions in your application as debug logs so that they can be enabled when there
+    is a production issue.
+-   Do not add Personal Identifiable Information (PII), tokens or any other sensitive information into logs.
+
+## Distributed Tracing
+
+Micro-services had been gaining a lot of traction over the years and even if you are not a fan of it, chances are that,
+in most cases, you have at least few separate applications interacting with each other to full-fill an overall goal.
+
+Tracing is an additional layer of observability which is capable tracking your application across multiple services.
+Therefore, it would be worthwhile to implement tracing if you are working on a large scale distributed application.
+
+While I am not planning on explaining distributed tracing in detail in this article, there are few things to note after
+you get to know about distributed tracing.
+
+-   Add the current trace ID and span ID to the logs so that the trace spans can be correlated with the logs.
+-   Use samplers — tracing all requests in your application can have a performance impact. Therefore it is important to
+    pick a sensible sampling rate for your application (I would recommend using a rate-limiting sampler which samples a
+    constant number of traces within a unit time).
+-   Implement proper propagation of trace context over incoming and outgoing requests for tracing across multiple
+    services.
+-   Do not trust the trace context that can be passed on by users — a malicious user can sample all requests by sending
+    a tampered trace context into your application.
+
+## Metrics
+
+While metrics may not seem important at a first glance, it can be quite handy as it will help in implementing an
+overall dashboard of all applications when dealing with a large scale deployment.
+
+![Metrics dashboard](//assets/blog/production-grade-code-in-the-cloud-era/metrics-dashboard.jpeg)
+
+A set of metrics covering things such as the errors that occurred in the application, total traffic, latency in
+handling requests / tasks (or any other information that is important to you) can help you spot issues in advance.
+
+For all the above (logs, distributed tracing and metrics), Open Telemetry had been gaining traction over the last few
+years, as a widely accepted specification. This was introduced by CNCF and it is being implemented by most of the
+popular frameworks such as Jaeger and Prometheus. Therefore, this can be a good starting point if you are not sure
+where to start at.
+
+## Health Probes
+
+In kubernetes (as well as many other cloud deployment solutions), health probes are an important aspect which should
+be implemented properly. In many cases, these probes will be used in different ways (e.g.:- for sending alerts for SRE
+teams, generating availability dashboards for users, automatically restarting services if they are unhealthy, etc.).
+
+Therefore, for your applications to function properly, it is important to implement the health probes properly. While
+the best practices may vary from one framework / use case to another, the important aspect to remember is to capture
+properly what constitutes as healthy for your application in the health probe endpoints.
+
+# Clean & Readable Code
+
+![Code](//assets/blog/production-grade-code-in-the-cloud-era/code.jpeg)
+
+The importance of clean and readable code had been highlighted by many people over the years. If you have ever had to
+fix a bug in a code someone wrote many years ago, you would know the importance of this.
+
+There are simple steps that you can take to ensure your code is readable by any poor soul who will need to fix a bug in
+the future.
+
+-   Make your variables as self-explanatory as possible — most compilers & transpilers today optimizes and minimizes
+    your code. Therefore extra few characters in your variable names would not harm anyone.
+-   Use nouns for variables and verbs for methods and see how your code itself becomes a story telling how it works.
+-   Do not misuse comments — your code should be all the explanation it needs. Try to think of exactly what you are
+    doing and make the code meaningful (this will help you reduce the number of bugs in your code as well).
+-   Use comments only when you write a complex algorithm which can benefit from a brief explanation.
+-   Setup static code checks and code style checks built into your CI/CD flows from the start — no project is too small
+    to not configure tools as an extra layer of validation.
+
+Most importantly, keep in mind that someone else would need to read your code and understand in the near future.
+
+# Think of the Bigger Picture
+
+Last, but not least, always think about the bigger picture of what you are working on. While some projects can get too
+complex to know the full breadth of it, it would always help to know as much as possible so that you can write better
+code catering to different possibilities.
+
+Thinking from different angles and pondering on the what-ifs of your application can give you the extra boost that you
+need to become a great developer among many good developers.
+
+---
+
+Finally, while all these are very sensible things to follow, always think and rely on your judgement. Every program you
+write is unique and there can be exceptions always.
+
+---
+
+Hope my two cents on writing production grade code helped you become a better developer. Please feel free to reach out
+to me if you need any clarifications.
+
+export default ({ children }) => (
+    <BlogPostLayout metadata={meta}>{children}</BlogPostLayout>
+);
