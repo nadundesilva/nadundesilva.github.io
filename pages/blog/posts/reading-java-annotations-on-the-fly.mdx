@@ -41,7 +41,7 @@ compiler and loaded into the JVM at run-time.
 
 Annotations by default are retained in the class files but they are not loaded into the JVM at run-time. Therefore to
 make sure that the annotations are stored in the class files and that they are loaded into the JVM at run-time, the
-`[@Retention(RetentionPolicy.RUNTIME)](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME)`
+[`@Retention(RetentionPolicy.RUNTIME`)](https://docs.oracle.com/javase/7/docs/api/java/lang/annotation/RetentionPolicy.html#RUNTIME)`
 annotation needs to be applied to the declaration of the annotation that you wish to read at compile time.
 
 ```java
