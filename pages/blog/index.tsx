@@ -59,7 +59,7 @@ const Blog = ({ posts }: BlogProps): React.ReactElement => {
             </Head>
             <Layout>
                 <LayoutContent>
-                    <Masonry columns={4} spacing={2}>
+                    <Masonry columns={5} spacing={2}>
                         {orderedPosts.map(
                             (post): React.ReactElement => (
                                 <Card key={post.file} sx={{ maxWidth: 345 }}>
