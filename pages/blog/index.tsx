@@ -55,7 +55,7 @@ const Blog = ({ posts }: BlogProps): React.ReactElement => {
     return (
         <Container maxWidth={false} disableGutters>
             <Head>
-                <title>Blog of Nadun De Silva</title>
+                <title>Nadun De Silva | Blog</title>
             </Head>
             <Layout>
                 <LayoutContent>
