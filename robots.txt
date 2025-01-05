@@ -1,4 +1,4 @@
 User-Agent: *
 Allow: /
 
-Sitemap: https://nadundesilva.github.io/sitemap.xml
+Sitemap: https://nadundesilva.com/sitemap.xml
