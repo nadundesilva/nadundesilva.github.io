@@ -21,10 +21,19 @@ Cypress.Commands.add("loadPage", (url: string): void => {
     cy.viewport(viewportWidth, viewportHeight);
     cy.log(`Changed viewport to ${viewportWidth}x${viewportHeight}`);
 
-    cy.visit(url);
+    cy.visit(url, {
+        onBeforeLoad(win) {
+            const stub = cy.stub(win, "matchMedia");
+            stub.withArgs("(prefers-color-scheme: dark)").returns({
+                matches: false,
+                addListener: () => {},
+            });
+            stub.callThrough();
+        },
+    });
+    cy.injectAxe();
     cy.scrollTo(0, 0, { duration: 1000 });
     cy.log(`Loaded ${url} page`);
-    window.localStorage.setItem("COLOR_SCHEME", "light");
 
     if (url !== WebsiteHome.path) {
         cy.wait(1000);

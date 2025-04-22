@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "lib": ["es5", "dom"],
-        "types": ["cypress", "node", "@testing-library/cypress"],
+        "lib": ["esnext", "dom"],
+        "types": ["cypress", "cypress-axe", "node", "@testing-library/cypress"],
         "baseUrl": "../",
         "paths": {
             "@/components/*": ["components/*"],

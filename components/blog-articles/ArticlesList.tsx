@@ -112,6 +112,7 @@ const ArticlesList = async ({
                                         gutterBottom
                                         variant="h4"
                                         sx={{ pb: 1 }}
+                                        component="h1"
                                     >
                                         {blogArticle.title}
                                     </Typography>

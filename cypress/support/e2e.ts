@@ -13,5 +13,6 @@
  * © 2023 Nadun De Silva. All rights reserved.
  */
 import "@cypress/code-coverage/support";
+import "cypress-axe";
 
 import "./commands";

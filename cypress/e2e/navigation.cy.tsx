@@ -41,6 +41,7 @@ describe("navigation between pages", () => {
 
                 cy.wait(1000);
                 cy.findByRole("progressbar").should("not.exist");
+                cy.checkA11y();
 
                 if (route.subRoutes !== undefined) {
                     throw new Error(
@@ -57,6 +58,8 @@ describe("navigation between pages", () => {
         ) => {
             Object.values(currentRoutes).forEach((route) => {
                 cy.clickNavLink(route.name);
+                cy.checkA11y();
+
                 if (route.subRoutes !== undefined) {
                     visitSubRoutes(route.subRoutes, route.name);
                 }
