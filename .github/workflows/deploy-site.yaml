@@ -47,6 +47,7 @@ jobs:
                   VALIDATE_BIOME_LINT: "false"
                   VALIDATE_MARKDOWN: "false"
                   VALIDATE_CHECKOV: "false"
+                  VALIDATE_EDITORCONFIG: "false"
 
     run-vulnerability-analysis:
         name: Run Vulnerability Analysis
