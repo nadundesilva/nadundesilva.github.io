@@ -68,6 +68,8 @@ Always use theme-aware color tokens (e.g., `text.secondary`, `text.primary`, `pa
 
 Reusable component styles should be centralized in the theme's `components` section to maintain consistency across the site rather than being defined inline in individual components.
 
+**Important**: Do not move styles into constants. Keep style values inline even if they are duplicated. However, Material-UI styled-components (using the `styled` utility) can be used when necessary for reusable styled-components. Only move styles to the theme object if they are truly reusable across multiple components. Component-specific styles (e.g., Timeline components only used in one place) should remain in the component rather than being moved to the theme.
+
 ## Known Issues & Solutions
 
 ### Array Mutations
