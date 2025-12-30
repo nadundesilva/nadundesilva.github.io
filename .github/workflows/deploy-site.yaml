@@ -343,9 +343,10 @@ jobs:
               with:
                   node-version: "24.12.0"
             - name: Deploy
-              uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
+              uses: cloudflare/wrangler-action@v3
               with:
-                  dry-run: ${{ github.event_name != 'push' }}
-                  branch: gh-pages
-                  folder: _site
-                  commit-message: "[Automated] Update Site (Source Commit: ${{ github.sha }})"
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  environment: production
+                  command: |
+                      pages deploy _site --project-name=personal-website
