@@ -19,7 +19,7 @@ import { type FormattableDate, Date, DateRange } from "./date";
 export interface Achievement {
     title: string;
     logo: LogoImageData;
-    logoClassName: string;
+    logoHeight: number;
     date: FormattableDate;
 }
 
@@ -27,43 +27,43 @@ const Achievements: Record<string, Achievement> = {
     WSO2SustainedOutstandingContributionAward: {
         title: "WSO2 Sustained Outstanding Contribution Award",
         logo: Logos.WSO2,
-        logoClassName: "h-[2.5em]",
+        logoHeight: 2.5,
         date: new DateRange(new Date(2019), new Date(2021)),
     },
     PlacementsOnTheDeansList: {
         title: "Placements on the Dean\u2019s List at the University of Moratuwa",
         logo: Logos.UniversityOfMoratuwa,
-        logoClassName: "h-[4em]",
+        logoHeight: 4,
         date: new DateRange(new Date(2014), new Date(2018)),
     },
     NasaSpaceAppsChallengeGlobalFinalist: {
         title: "NASA Space Apps Challenge - Galactic Impact - Global Finalist",
         logo: Logos.NasaSpaceAppsChallenge,
-        logoClassName: "h-[2.5em]",
+        logoHeight: 2.5,
         date: new Date(2017),
     },
     WSO2InternalHackathonHonorableMention: {
         title: "WSO2 Internal Hackathon - Honorable Mention",
         logo: Logos.WSO2,
-        logoClassName: "h-[2.5em]",
+        logoHeight: 2.5,
         date: new Date(2017),
     },
     AngelHackFinalist: {
         title: "Angel Hack - Finalist",
         logo: Logos.AngelHack,
-        logoClassName: "h-[2.5em]",
+        logoHeight: 2.5,
         date: new Date(2016),
     },
     HackaDevFinalist: {
         title: "HackaDev - Finalist",
         logo: Logos.HackaDev,
-        logoClassName: "h-[4.5em]",
+        logoHeight: 4.5,
         date: new Date(2015),
     },
     BritishCouncilHSBCYouthEnterpriseAwardsFinalist: {
         title: "British Council HSBC Youth Enterprise Awards - Finalist",
         logo: Logos.BritishCouncil,
-        logoClassName: "h-[2.5em]",
+        logoHeight: 2.5,
         date: new Date(2015),
     },
 };

@@ -32,9 +32,10 @@ const EXPECTED_CSP_FRAGMENTS = [
 ];
 
 // public/_headers - replayed by .github/scripts/start-server.sh in local/CI runs
-// and served by Cloudflare Pages in production.
+// and served by Cloudflare Pages in production. In production the HSTS header
+// comes from Cloudflare's zone setting (12 months max), so _headers mirrors it.
 const EXPECTED_SECURITY_HEADERS: Record<string, string> = {
-    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
     "x-content-type-options": "nosniff",
     "x-frame-options": "DENY",
     "permissions-policy": "camera=(), microphone=(), geolocation=()",
@@ -58,6 +59,9 @@ describe("security response headers", () => {
                     expect(content).to.match(/connect-src[^;]*'self'/);
                     expect(content).to.match(
                         /connect-src[^;]*https:\/\/o4507214991917056\.ingest\.us\.sentry\.io/,
+                    );
+                    expect(content).to.match(
+                        /connect-src[^;]*https:\/\/cloudflareinsights\.com/,
                     );
                 });
         }

@@ -131,7 +131,14 @@ Cypress.Commands.add("assertVisibleImagesLoaded", (): void => {
         if ($body.find("img:visible").length === 0) return;
 
         cy.get("img:visible").each(($img) => {
-            cy.wrap($img).scrollIntoView();
+            // behavior: "instant" is required to override the app's global
+            // `scroll-behavior: smooth` (app.css): Cypress's own
+            // scrollIntoView() doesn't set it, so each scroll would animate
+            // and be retargeted by the next image's scroll, leaving lazy
+            // images far down the page never scrolled to and never fetched.
+            cy.wrap($img).then(($el) => {
+                $el[0].scrollIntoView({ behavior: "instant", block: "center" });
+            });
 
             // Waits on the browser actually starting the fetch, not a fixed
             // guess at how long that takes: Cypress's .should() retries this

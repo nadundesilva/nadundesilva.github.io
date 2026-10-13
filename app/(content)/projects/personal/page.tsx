@@ -37,13 +37,15 @@ import { resolveRoute } from "@/utils/common/routes";
 interface PersonalProjectSectionHeadingProps {
     id: string;
     project: Project;
-    logoClassName: string;
+    logoHeight: number;
+    logoFetchPriority?: "high";
 }
 
 const PersonalProjectSectionHeading = ({
     id,
     project,
-    logoClassName,
+    logoHeight,
+    logoFetchPriority,
 }: PersonalProjectSectionHeadingProps): React.ReactElement => (
     <SectionHeading
         id={id}
@@ -52,7 +54,8 @@ const PersonalProjectSectionHeading = ({
                 srcLight={project.logo.srcLight}
                 srcDark={project.logo.srcDark}
                 alt=""
-                className={logoClassName}
+                height={logoHeight}
+                fetchPriority={logoFetchPriority}
             />
         }
         actionButton={{
@@ -103,7 +106,8 @@ const PersonalProjects = (): React.ReactElement => {
                 <PersonalProjectSectionHeading
                     id="section-project-k8s-replicator"
                     project={ProjectDetails.K8sReplicator}
-                    logoClassName="h-[3.5em]"
+                    logoHeight={3.5}
+                    logoFetchPriority="high"
                 />
                 <Paragraph>
                     In {Kubernetes} deployments when the same {Secret},{" "}
@@ -133,7 +137,7 @@ const PersonalProjects = (): React.ReactElement => {
                 <PersonalProjectSectionHeading
                     id="section-project-mesh-manager"
                     project={ProjectDetails.MeshManager}
-                    logoClassName="h-[4.5em]"
+                    logoHeight={4.5}
                 />
                 <Paragraph>
                     When working with a large deployment based on a

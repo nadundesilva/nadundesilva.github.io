@@ -7,6 +7,7 @@
 - Reduce duplication: cross-reference sections instead of repeating information.
 - Point to actual project files rather than duplicating their content here.
 - When updating, consolidate similar information; do not add standalone "new discovery" sections.
+- The `<!-- BEGIN:nextjs-agent-rules -->` … `<!-- END:nextjs-agent-rules -->` block at the very end of this file is written and re-added by `next dev` and brings its own `#` heading. Always keep it as the last thing in the file: add new content above it, never after it, or it ends up nested under that heading.
 
 ---
 
@@ -481,15 +482,15 @@ Two separate homes, split by provenance:
 
 **Hand-written primitives** (all exported from [`components/primitives/index.tsx`](./components/primitives/index.tsx)):
 
-| Primitive                | What it renders                                                                         |
-| ------------------------ | --------------------------------------------------------------------------------------- |
-| `CopyButton`             | Clipboard copy button (used in code blocks)                                             |
-| `HorizontalGradientLine` | Short left-anchored gradient accent line (color → transparent) used under headings      |
-| `LeftAccent`             | Left border accent wrapping a content block                                             |
-| `PrimaryTintedIcon`      | Icon tinted with the primary color                                                      |
-| `ProgressFab`            | Circular progress ring FAB — used by `ReadingProgress` to show article reading progress |
-| `ScrollReveal`           | Wraps children in a motion-based scroll-reveal animation                                |
-| `StaggerReveal`          | Wraps a list in staggered scroll-reveal animations                                      |
+| Primitive                | What it renders                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `CopyButton`             | Clipboard copy button (used in code blocks)                                                 |
+| `HorizontalGradientLine` | Short left-anchored gradient accent line (color → transparent) used under headings          |
+| `LeftAccent`             | Left border accent wrapping a content block                                                 |
+| `PrimaryTintedIcon`      | Icon tinted with the primary color                                                          |
+| `ProgressFab`            | Circular progress ring FAB — used by `ReadingProgress` to show article reading progress     |
+| `ScrollReveal`           | Wraps children in a CSS scroll-triggered scale reveal (`animation-trigger`, fixed duration) |
+| `StaggerReveal`          | Wraps a list in staggered scroll-reveal animations                                          |
 
 > **shadcn component integrity rule:** Never partially remove sub-components from a shadcn component. If at least one sub-component is used anywhere in the project, the entire component (including all unused sub-components) stays. Only remove the whole component if none of its exports are used anywhere.
 
@@ -525,6 +526,8 @@ For button-styled links, use [`LinkButton`](./components/content/LinkButton.tsx)
 ### Image Handling
 
 Always import `Image` from `next-image-export-optimizer`, not from `next/image`. Source images live in `assets/` and are imported as static modules (e.g. `import img from "@/assets/foo.webp"`). Optimized WebP output is written to `out/optimized-images/` during `npm run build`.
+
+**Metadata images use the optimized variant, never the original.** og:image, twitter:image, JSON-LD `image`, RSS enclosures and icons must go through `getOptimizedImage()` from [`utils/common/image-metadata.ts`](./utils/common/image-metadata.ts) rather than `StaticImageData.src`. Originals under `_next/static/media` are otherwise fetched at full size and (for raster images) are excluded from the PWA precache in `next.config.mjs` (`buildExcludes`). `getOptimizedImage` mirrors the optimizer's `-opt-<width>.WEBP` naming, which the library doesn't expose — the `seo.cy.tsx` image-fetch tests catch drift.
 
 #### Two image components — which to use
 
@@ -1030,3 +1033,17 @@ re-focuses the detached popup node a frame later, knocking focus back to `<body>
 ### `ContentContainer` padding must be mirrored in `image-sizes.ts`
 
 `CONTENT_BREAKPOINTS` in [`utils/common/image-sizes.ts`](./utils/common/image-sizes.ts) hardcodes the min-width and padding pixel values for each breakpoint. The padding values mirror the `px-*` Tailwind classes in [`components/layout/ContentContainer.tsx`](./components/layout/ContentContainer.tsx). Both `generateSizesForContentBreakpoints` and `generateSizesForColumnLayout` derive their `calc()` strings from these values. If `ContentContainer`'s padding classes change, update `CONTENT_BREAKPOINTS` in the same PR or all `sizes` strings will be wrong.
+
+### `Logo` takes a `height` (em) and derives `sizes` from it
+
+Logos are height-limited (`object-scale-down`), so their rendered width is `height × aspect ratio`, not the container width. [`Logo`](./components/content/Logo.tsx) sets the box height from its `height` prop (em) and emits `sizes` as `height × width/height` in `em`. Do not size a logo through a `h-[…em]` class — the `sizes` would fall back to the container width and the browser would fetch a larger srcset candidate than needed. `em` in `sizes` resolves against the root font size (not the element's), which matches the page only while no ancestor overrides `font-size`.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

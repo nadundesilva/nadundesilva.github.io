@@ -31,8 +31,30 @@ const mockLogoData: LogoImageData = {
 };
 
 describe("Logo", () => {
+    it("loads immediately at high priority when it is the first thing on the page", () => {
+        cy.mount(
+            <Logo {...mockLogoData} height={2} alt="" fetchPriority="high" />,
+        );
+
+        // Both themes' images are prioritized: only one is shown at a time,
+        // and either may be the LCP element.
+        for (const testId of ["logo-light", "logo-dark"]) {
+            cy.findByTestId(testId)
+                .should("have.attr", "fetchpriority", "high")
+                .and("have.attr", "loading", "eager");
+        }
+    });
+
+    it("defers loading by default so below-the-fold logos do not compete for bandwidth", () => {
+        cy.mount(<Logo {...mockLogoData} height={2} alt="" />);
+
+        for (const testId of ["logo-light", "logo-dark"]) {
+            cy.findByTestId(testId).should("have.attr", "loading", "lazy");
+        }
+    });
+
     it("stays out of the accessibility tree when it is purely decorative", () => {
-        cy.mount(<Logo {...mockLogoData} alt="" />);
+        cy.mount(<Logo {...mockLogoData} height={2} alt="" />);
 
         // The light image carries no alt text of its own, so its ancestor container
         // must be aria-hidden to suppress the decorative logo from the accessibility tree.
@@ -42,7 +64,7 @@ describe("Logo", () => {
     });
 
     it("describes the light-mode image to screen readers with the caller's alt text", () => {
-        cy.mount(<Logo {...mockLogoData} alt="Company Name" />);
+        cy.mount(<Logo {...mockLogoData} height={2} alt="Company Name" />);
 
         cy.findByTestId("logo-light").should(
             "have.attr",
@@ -52,7 +74,7 @@ describe("Logo", () => {
     });
 
     it("always hides the dark-mode image from the accessibility tree to prevent double announcements", () => {
-        cy.mount(<Logo {...mockLogoData} alt="Company Name" />);
+        cy.mount(<Logo {...mockLogoData} height={2} alt="Company Name" />);
 
         cy.findByTestId("logo-dark")
             .should("have.attr", "aria-hidden", "true")
@@ -60,7 +82,7 @@ describe("Logo", () => {
     });
 
     it("shows the light-mode image by default and hides it in dark mode", () => {
-        cy.mount(<Logo {...mockLogoData} alt="" />);
+        cy.mount(<Logo {...mockLogoData} height={2} alt="" />);
 
         cy.findByTestId("logo-light").should("be.visible");
 
@@ -71,7 +93,7 @@ describe("Logo", () => {
     });
 
     it("hides the dark-mode image by default and shows it in dark mode", () => {
-        cy.mount(<Logo {...mockLogoData} alt="" />);
+        cy.mount(<Logo {...mockLogoData} height={2} alt="" />);
 
         cy.findByTestId("logo-dark").should("not.be.visible");
 
@@ -79,5 +101,22 @@ describe("Logo", () => {
             doc.documentElement.classList.add("dark");
         });
         cy.findByTestId("logo-dark").should("be.visible");
+    });
+
+    it("takes up the requested height", () => {
+        cy.mount(<Logo {...mockLogoData} height={2.5} alt="" />);
+
+        cy.findByTestId("logo-light")
+            .parent()
+            .should("have.css", "height", "40px");
+    });
+
+    it("lets the browser pick an image no wider than the logo is rendered", () => {
+        cy.mount(<Logo {...mockLogoData} height={2} alt="" />);
+
+        // 280x80 at 2em tall renders 7em (112px) wide.
+        for (const testId of ["logo-light", "logo-dark"]) {
+            cy.findByTestId(testId).should("have.attr", "sizes", "7em");
+        }
     });
 });

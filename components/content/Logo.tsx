@@ -19,21 +19,28 @@ import { type LogoImageData } from "@/constants/logos";
 import { cn } from "@/shadcn/lib/cn";
 import { generateSizesForContentBreakpoints } from "@/utils/common/image-sizes";
 
-// Container: w-full below sm, sm:w-70 (280px) at sm+. Fixed px auto-propagates to md/lg/xl/2xl.
-const IMAGE_SIZES = generateSizesForContentBreakpoints({
-    sm: { absolute: "280px" }, // fixed — matches sm:w-70 container
-});
-
 interface LogoProps extends LogoImageData {
     alt: string;
+    height: number; // Rendered height in em.
     className?: string;
+    fetchPriority?: "high" | "low" | "auto";
 }
+
+// Logos are height-limited (object-scale-down), so the rendered width is the
+// height times the aspect ratio. sizes resolves em against the root font size,
+// which matches the page since no ancestor overrides it.
+const logoSizes = (src: LogoImageData["srcLight"], height: number): string =>
+    generateSizesForContentBreakpoints({
+        default: { absolute: `${(height * src.width) / src.height}em` },
+    });
 
 const Logo = ({
     srcLight,
     srcDark,
     alt,
+    height,
     className,
+    fetchPriority,
 }: LogoProps): React.ReactElement => (
     <div
         aria-hidden={alt === "" ? true : undefined}
@@ -41,13 +48,16 @@ const Logo = ({
             "relative w-full py-2 motion-safe:transition-opacity motion-safe:duration-250 hover:opacity-80",
             className,
         )}
+        style={{ height: `${height}em` }}
     >
         <Image
             data-testid="logo-light"
             alt={alt}
             src={srcLight}
             fill
-            sizes={IMAGE_SIZES}
+            sizes={logoSizes(srcLight, height)}
+            fetchPriority={fetchPriority}
+            loading={fetchPriority === "high" ? "eager" : undefined}
             className="object-scale-down object-left sm:object-right dark:hidden"
         />
         <Image
@@ -56,7 +66,9 @@ const Logo = ({
             aria-hidden={true}
             src={srcDark}
             fill
-            sizes={IMAGE_SIZES}
+            sizes={logoSizes(srcDark, height)}
+            fetchPriority={fetchPriority}
+            loading={fetchPriority === "high" ? "eager" : undefined}
             className="hidden object-scale-down object-left sm:object-right dark:block"
         />
     </div>

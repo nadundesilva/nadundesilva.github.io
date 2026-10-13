@@ -25,4 +25,4 @@ The following terms and conditions govern the use of the software and source cod
 
 Please read this license carefully before using the Software. By using the Software, you acknowledge that you have read, understood, and agree to be bound by these terms and conditions.
 
-For any questions or inquiries, please contact [Nadun De Silva](mailto:nadunrds@gmail.com).
+For any questions or inquiries, please contact [Nadun De Silva](mailto:contact@nadundesilva.com).

@@ -45,13 +45,15 @@ export const metadata: Metadata = {
 interface ProjectSectionHeadingProps {
     id: string;
     project: Project;
-    logoClassName: string;
+    logoHeight: number;
+    logoFetchPriority?: "high";
 }
 
 const ProjectSectionHeading = ({
     id,
     project,
-    logoClassName,
+    logoHeight,
+    logoFetchPriority,
 }: ProjectSectionHeadingProps): React.ReactElement => (
     <SectionHeading
         id={id}
@@ -61,7 +63,8 @@ const ProjectSectionHeading = ({
                 srcLight={project.logo.srcLight}
                 srcDark={project.logo.srcDark}
                 alt=""
-                className={logoClassName}
+                height={logoHeight}
+                fetchPriority={logoFetchPriority}
             />
         }
     >
@@ -138,7 +141,8 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-indexity"
                     project={ProjectDetails.Indexity}
-                    logoClassName="h-[1.5em]"
+                    logoHeight={1.5}
+                    logoFetchPriority="high"
                 />
                 <Paragraph>
                     {Indexity} is a cloud-native Enterprise Master Patient Index
@@ -216,7 +220,7 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-choreo"
                     project={ProjectDetails.Choreo}
-                    logoClassName="h-[2.0em]"
+                    logoHeight={2}
                 />
                 <Paragraph>
                     {Choreo} is a Digital Platform as a Service which abstracts
@@ -313,7 +317,7 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-ballerina"
                     project={ProjectDetails.Ballerina}
-                    logoClassName="h-[1.5em]"
+                    logoHeight={1.5}
                 />
                 <Paragraph>
                     {Ballerina} is a programming language built within{" "}
@@ -355,7 +359,7 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-cellery"
                     project={ProjectDetails.Cellery}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     {Cellery} is an implementation of the Cell-based
@@ -432,7 +436,7 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-siddhi"
                     project={ProjectDetails.Siddhi}
-                    logoClassName="h-[1.8em]"
+                    logoHeight={1.8}
                 />
                 <Paragraph>
                     {Siddhi} is a fully open source, cloud-native, scalable,
@@ -468,7 +472,7 @@ const Projects = (): React.ReactElement => {
                 <ProjectSectionHeading
                     id="section-project-gsoc-2017"
                     project={ProjectDetails.GoogleSummerOfCode}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     During my last year at the University, in my spare time, I

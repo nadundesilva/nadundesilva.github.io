@@ -65,7 +65,7 @@ const AchievementSectionHeading = ({
                 srcLight={achievement.logo.srcLight}
                 srcDark={achievement.logo.srcDark}
                 alt=""
-                className={achievement.logoClassName}
+                height={achievement.logoHeight}
             />
         }
     >

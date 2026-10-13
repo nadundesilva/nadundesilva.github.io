@@ -42,7 +42,7 @@ generate_tls_cert() {
         -sha256 \
         -days 3650 \
         -nodes \
-        -subj "/C=AU/ST=NSW/L=Sydney/O=nadunrds/OU=nadun/CN=nadundesilva.com Test Root CA/emailAddress=nadunrds@gmail.com" \
+        -subj "/C=AU/ST=NSW/L=Sydney/O=nadunrds/OU=nadun/CN=nadundesilva.com Test Root CA/emailAddress=website@nadundesilva.com" \
         -keyout "${ROOT_CA_KEY}" \
         -out "${ROOT_CA_CERT}"
 
@@ -50,7 +50,7 @@ generate_tls_cert() {
     openssl req \
         -newkey rsa:4096 \
         -sha256 -nodes \
-        -subj "/C=AU/ST=NSW/L=Sydney/O=nadunrds/OU=nadun/CN=nadundesilva.com/emailAddress=nadunrds@gmail.com" \
+        -subj "/C=AU/ST=NSW/L=Sydney/O=nadunrds/OU=nadun/CN=nadundesilva.com/emailAddress=website@nadundesilva.com" \
         -keyout "${SERVER_KEY}" \
         -out "${SERVER_CSR}"
     openssl x509 \

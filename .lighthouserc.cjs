@@ -28,9 +28,28 @@ const PATHS = [
 
 // Rules that should only be enforced against the production server (Cloudflare CDN).
 // They are skipped when auditing the local CI dev server (Caddy) because the local
-// setup structurally can't satisfy them.
+// setup structurally can't satisfy them, or because Cloudflare injects extra items
+// that Caddy doesn't (so the live count is higher than the CI count).
 const LIVE_SITE_ASSERTIONS = {
-    deprecations: ["warn"],
+    // Sentry + Cloudflare Analytics (reported as "Cloudflare" and "cloudflareinsights.com")
+    "third-parties-insight": ["error", { maxLength: 3 }],
+
+    // CI count + Cloudflare's beacon.min.js
+    "legacy-javascript-insight": ["error", { maxLength: 2 }],
+
+    // Only Cloudflare's beacon.min.js is flagged on the live site (plain and versioned URL).
+    // Locally Caddy sends no Cache-Control on /optimized-images/*, so CI can't pin this
+    "cache-insight": ["error", { maxLength: 2 }],
+
+    // Same Cloudflare-only beacon as cache-insight (legacy twin of that audit)
+    "uses-long-cache-ttl": ["error", { maxLength: 2 }],
+
+    // Legacy twin of legacy-javascript-insight: lists beacon.min.js twice (plain and
+    // versioned URL), where the insight dedupes it, so one more than the insight's 2
+    "legacy-javascript": ["error", { maxLength: 3 }],
+
+    // Passes on the live site; only the local CI server reports it as "Not actionable"
+    "bf-cache": ["error"],
 };
 
 let TARGET_BASE_URL = process.env.TARGET_BASE_URL;
@@ -55,43 +74,46 @@ module.exports = {
         assert: {
             preset: "lighthouse:recommended",
             assertions: {
-                // next-pwa service worker intercepts navigation, preventing BFCache during
-                // Lighthouse's headless simulation — Lighthouse marks this "Not actionable"
+                // Against the local CI server Lighthouse marks BFCache failures on some pages
+                // (e.g. /blog-articles) "Not actionable / Internal error"; see LIVE_SITE_ASSERTIONS
                 "bf-cache": ["warn"],
 
-                // Intentional third parties: Sentry error tracking + Cloudflare Analytics
-                "third-parties-insight": ["warn"],
+                // Pinned to the known third party (Sentry). The audit is informational (always
+                // scores 1), so the entity count is the only thing that can catch a new one
+                "third-parties-insight": ["error", { maxLength: 1 }],
 
-                // SPA complexity — hard to eliminate without deep profiling
-                "forced-reflow-insight": ["warn"],
+                // Framework overhead: Next.js, Sentry, base-ui and motion/react chunks. Pinned to
+                // the current chunk count so a new bundle fails the audit; raise it deliberately
+                "unused-javascript": ["error", { maxLength: 4 }],
 
-                // Framework overhead: Next.js chunks, Sentry replay, motion/react
-                "unused-javascript": ["warn"],
-
-                // Already using WebP via next-image-export-optimizer; minor AVIF savings
+                // The flagged images are the 720px srcset candidate shown at ~380 CSS px, which
+                // is the right pick at the emulated 1.75 DPR (uses-responsive-images passes);
+                // the remainder are small compression hints on already-optimized WebP
                 "image-delivery-insight": ["warn"],
 
-                // Sentry v10 SDK bundles internal polyfills for Array.prototype.at/flat/flatMap
-                // regardless of browserslist target — not fixable without replacing Sentry
-                "legacy-javascript": ["warn"],
-                "legacy-javascript-insight": ["warn"],
+                // Next.js's built-in polyfill-module (Array.prototype.at/flat/flatMap,
+                // Object.fromEntries/hasOwn, String.prototype.trimStart/trimEnd) ships in the main
+                // chunk regardless of browserslist target, with no supported way to drop it.
+                // Pinned to that one chunk so new legacy code fails the audit
+                "legacy-javascript-insight": ["error", { maxLength: 1 }],
 
-                // SPA routing complexity — hard to eliminate without deep profiling
-                "max-potential-fid": ["warn"],
+                // Legacy twin of legacy-javascript-insight: same polyfill-module chunk
+                "legacy-javascript": ["error", { maxLength: 1 }],
 
-                // Next.js injects critical CSS inline; framework behavior, not fixable
-                "network-dependency-tree-insight": ["warn"],
-                "render-blocking-insight": ["warn"],
-                "render-blocking-resources": ["warn"],
+                // Legacy twin of render-blocking-insight: same stylesheet pin
+                "render-blocking-resources": ["error", { maxLength: 5 }],
 
-                // Cloudflare CDN cache TTL is controlled by the platform, not the build
+                // Legacy twin of cache-insight: Caddy sends no Cache-Control locally,
+                // so only the live site can be held to it (see LIVE_SITE_ASSERTIONS)
                 "uses-long-cache-ttl": ["warn"],
 
-                // Next.js App Router includes CSS from nested layouts in a global shared chunk
-                // loaded on every page to support SPA navigation — the syntax-highlight CSS from
-                // the blog-articles layout is therefore present but unused on non-article pages.
-                // This is a framework bundling behaviour, not fixable without restructuring CSS.
-                "unused-css-rules": ["warn"],
+                // Next.js serves its CSS and JS as external files, so the HTML -> CSS/JS request
+                // chain is inherent to the build output
+                "network-dependency-tree-insight": ["warn"],
+
+                // Next.js emits one stylesheet per layout chunk (5 on the home page, 4 elsewhere).
+                // Pinned so an additional render-blocking stylesheet fails the audit
+                "render-blocking-insight": ["error", { maxLength: 5 }],
 
                 ...(process.env.VALIDATING_LIVE_SITE === "true"
                     ? LIVE_SITE_ASSERTIONS

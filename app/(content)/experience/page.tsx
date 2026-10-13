@@ -40,13 +40,15 @@ export const metadata: Metadata = {
 interface ExperienceSectionHeadingProps {
     id: string;
     experience: Experience;
-    logoClassName?: string;
+    logoHeight: number;
+    logoFetchPriority?: "high";
 }
 
 const ExperienceSectionHeading = ({
     id,
     experience,
-    logoClassName,
+    logoHeight,
+    logoFetchPriority,
 }: ExperienceSectionHeadingProps): React.ReactElement => (
     <SectionHeading
         id={id}
@@ -56,7 +58,8 @@ const ExperienceSectionHeading = ({
                 srcLight={experience.company.logo.srcLight}
                 srcDark={experience.company.logo.srcDark}
                 alt=""
-                className={logoClassName}
+                height={logoHeight}
+                fetchPriority={logoFetchPriority}
             />
         }
     >
@@ -149,7 +152,8 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-lead-mccrae"
                     experience={Experiences.McCraeTechLeadSoftwareEngineer}
-                    logoClassName="h-[1.5em]"
+                    logoHeight={1.5}
+                    logoFetchPriority="high"
                 />
                 <Paragraph>
                     After the divestment of {McCraeTech} from {OrionHealth}, I
@@ -191,7 +195,7 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-senior-se-orion"
                     experience={Experiences.OrionHealthSeniorSoftwareEngineer}
-                    logoClassName="h-[3em]"
+                    logoHeight={3}
                 />
                 <Paragraph>
                     At {OrionHealth}, I spearheaded the deployment of {Indexity}{" "}
@@ -248,7 +252,7 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-atl-wso2"
                     experience={Experiences.WSO2AssociateTechnicalLead}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     I led the technical aspects of the Observability area and it
@@ -312,7 +316,7 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-senior-se-wso2"
                     experience={Experiences.WSO2SeniorSoftwareEngineer}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     I completely owned the Observability area of Cellery and
@@ -410,7 +414,7 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-se-wso2"
                     experience={Experiences.WSO2SoftwareEngineer}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     At the start of my employment, I worked in multiple teams as
@@ -505,7 +509,7 @@ const Experience = (): React.ReactElement => {
                 <ExperienceSectionHeading
                     id="section-trainee-wso2"
                     experience={Experiences.WSO2SoftwareEngineeringTrainee}
-                    logoClassName="h-[2.5em]"
+                    logoHeight={2.5}
                 />
                 <Paragraph>
                     I worked as a Software Engineering intern at {WSO2} as a

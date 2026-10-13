@@ -24,16 +24,7 @@ Sentry.init({
     dsn: "https://639f507631857dffcfd70a636765a5c0@o4507214991917056.ingest.us.sentry.io/4507287404544000",
     debug: false,
 
-    integrations: [
-        Sentry.replayIntegration({
-            maskAllText: true,
-            blockAllMedia: true,
-        }),
-    ],
-
     tracesSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-    replaysSessionSampleRate: 0.01,
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

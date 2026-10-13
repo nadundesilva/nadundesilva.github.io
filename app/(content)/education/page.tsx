@@ -63,13 +63,15 @@ const scholarlyArticlesJsonLd: Graph = {
 interface EducationSectionHeadingProps {
     id: string;
     education: Education;
-    logoClassName?: string;
+    logoHeight: number;
+    logoFetchPriority?: "high";
 }
 
 const EducationSectionHeading = ({
     id,
     education,
-    logoClassName,
+    logoHeight,
+    logoFetchPriority,
 }: EducationSectionHeadingProps): React.ReactElement => (
     <SectionHeading
         id={id}
@@ -79,7 +81,8 @@ const EducationSectionHeading = ({
                 srcLight={education.institute.logo.srcLight}
                 srcDark={education.institute.logo.srcDark}
                 alt=""
-                className={logoClassName}
+                height={logoHeight}
+                fetchPriority={logoFetchPriority}
             />
         }
     >
@@ -126,7 +129,8 @@ const Education = (): React.ReactElement => {
                 <EducationSectionHeading
                     id="section-bsc-uom"
                     education={Educations.BScUniversityOfMoratuwa}
-                    logoClassName="h-[4em]"
+                    logoHeight={4}
+                    logoFetchPriority="high"
                 />
                 <Paragraph>
                     I studied for my four-year bachelor&apos;s degree at the{" "}
@@ -166,7 +170,7 @@ const Education = (): React.ReactElement => {
                 <EducationSectionHeading
                     id="section-al-sjc"
                     education={Educations.ALStJosephsCollegeColombo10}
-                    logoClassName="h-[4em]"
+                    logoHeight={4}
                 />
                 <Paragraph>
                     I attended school at {StJosephsCollegeColombo10} where I

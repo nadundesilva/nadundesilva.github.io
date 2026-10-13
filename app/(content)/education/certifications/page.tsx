@@ -41,11 +41,13 @@ export const metadata: Metadata = {
 interface CertificationSectionHeadingProps {
     id: string;
     certificate: Certificate;
+    logoFetchPriority?: "high";
 }
 
 const CertificationSectionHeading = ({
     id,
     certificate,
+    logoFetchPriority,
 }: CertificationSectionHeadingProps): React.ReactElement => (
     <SectionHeading
         id={id}
@@ -55,7 +57,8 @@ const CertificationSectionHeading = ({
                 srcLight={certificate.logo.srcLight}
                 srcDark={certificate.logo.srcDark}
                 alt=""
-                className="h-[5em]"
+                height={5}
+                fetchPriority={logoFetchPriority}
             />
         }
         actionButton={{
@@ -121,6 +124,7 @@ const Certifications = (): React.ReactElement => {
                     certificate={
                         Certificates.FundamentalsOfReinforcementLearning
                     }
+                    logoFetchPriority="high"
                 />
                 <Paragraph>
                     This course is offered by{" "}
