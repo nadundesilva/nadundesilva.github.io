@@ -127,11 +127,13 @@ describe("Experience", () => {
             .within(() => {
                 cy.contains(hiddenSkill.name)
                     .closest("li")
-                    .should("have.class", "sr-only");
+                    .invoke("outerWidth")
+                    .should("be.lte", 1);
                 cy.findByRole("button", { name: /more/i }).click();
                 cy.contains(hiddenSkill.name)
                     .closest("li")
-                    .should("not.have.class", "sr-only");
+                    .invoke("outerWidth")
+                    .should("be.gt", 1);
             });
     });
 });
