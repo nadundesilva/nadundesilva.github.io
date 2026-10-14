@@ -125,22 +125,25 @@ describe("mobile drawer navigation", () => {
         // Initially closed
         cy.findByRole("button", { name: /open navigation menu/i })
             .should("be.visible")
-            .find("svg")
-            .should("have.class", "lucide-menu");
+            .within(() => {
+                cy.findByTestId("menu-icon").should("exist");
+            });
 
         // Open
         cy.findByRole("button", { name: /open navigation menu/i }).click();
         cy.findByRole("button", { name: /close navigation menu/i })
             .should("be.visible")
-            .find("svg")
-            .should("have.class", "lucide-x");
+            .within(() => {
+                cy.findByTestId("close-icon").should("exist");
+            });
 
         // Close again
         cy.findByRole("button", { name: /close navigation menu/i }).click();
         cy.findByRole("button", { name: /open navigation menu/i })
             .should("be.visible")
-            .find("svg")
-            .should("have.class", "lucide-menu");
+            .within(() => {
+                cy.findByTestId("menu-icon").should("exist");
+            });
     });
 
     it("marks the current page as active in the drawer navigation", () => {

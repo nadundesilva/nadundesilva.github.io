@@ -184,9 +184,9 @@ const Layout = ({
                         }
                     >
                         {isDrawerOpen ? (
-                            <X aria-hidden={true} />
+                            <X aria-hidden={true} data-testid="close-icon" />
                         ) : (
-                            <Menu aria-hidden={true} />
+                            <Menu aria-hidden={true} data-testid="menu-icon" />
                         )}
                     </DrawerTrigger>
 
@@ -284,7 +284,9 @@ const Layout = ({
                     // like it unfurls from the app bar's bottom edge and settles in
                     // the same place, instead of sliding in from above the app bar.
                     "data-[swipe-direction=up]:[--closed-transform:none]",
-                    "transition-[transform,height,opacity,filter,clip-path] [clip-path:inset(0_0_0%_0)]",
+                    // transition-none overrides the Drawer's own unguarded base
+                    // transition so reduced-motion users get no animation at all.
+                    "transition-none motion-safe:transition-[transform,height,opacity,filter,clip-path] [clip-path:inset(0_0_0%_0)]",
                     "data-starting-style:[clip-path:inset(0_0_100%_0)] data-ending-style:[clip-path:inset(0_0_100%_0)]",
 
                     "rounded-none border-none bg-primary/95 backdrop-blur-md shadow-none",

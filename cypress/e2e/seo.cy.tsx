@@ -420,14 +420,14 @@ describe("home page JSON-LD structured data", () => {
                     (profilePage!["mainEntity"] as Record<string, string>)[
                         "@id"
                     ],
-                ).to.include("/#person");
+                ).to.eq(SCHEMA_PERSON_ID);
 
                 const person = (data["@graph"] as unknown[]).find(
                     (e: unknown) =>
                         (e as Record<string, unknown>)["@type"] === "Person",
                 ) as Record<string, unknown> | undefined;
                 void expect(person).to.exist;
-                void expect(person!["@id"]).to.include("/#person");
+                void expect(person!["@id"]).to.eq(SCHEMA_PERSON_ID);
                 void expect(person!["knowsAbout"])
                     .to.be.an("array")
                     .with.length.at.least(1);
@@ -795,7 +795,9 @@ describe("CollectionPage JSON-LD structured data", () => {
                 }
             });
             void expect(collectionPage).to.not.be.null;
-            void expect(collectionPage!["@id"]).to.include("/projects");
+            void expect(collectionPage!["@id"]).to.eq(
+                `${WEBSITE_PUBLIC_URL}/projects`,
+            );
             void expect(collectionPage!["isPartOf"]).to.deep.include({
                 "@id": SCHEMA_WEBSITE_ID,
             });

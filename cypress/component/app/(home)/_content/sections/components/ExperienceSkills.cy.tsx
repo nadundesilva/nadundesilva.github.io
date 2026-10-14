@@ -50,10 +50,10 @@ describe("ExperienceSkills", () => {
             </ExperienceSkills>,
         );
 
-        // Chips beyond index 4 are sr-only (visually hidden but in the accessibility tree).
-        // The sr-only class is applied to the <li> wrapper, not the chip span.
-        cy.contains("F").closest("li").should("have.class", "sr-only");
-        cy.contains("G").closest("li").should("have.class", "sr-only");
+        // Chips beyond index 4 are visually hidden but stay in the accessibility
+        // tree, collapsed to at most 1px wide on the <li> wrapper (not the chip span).
+        cy.contains("F").closest("li").invoke("outerWidth").should("be.lte", 1);
+        cy.contains("G").closest("li").invoke("outerWidth").should("be.lte", 1);
         cy.findByRole("button", { name: /more/i })
             .should("be.visible")
             .and("have.attr", "aria-expanded", "false");
@@ -68,8 +68,8 @@ describe("ExperienceSkills", () => {
 
         cy.findByRole("button", { name: /more/i }).click();
 
-        cy.contains("F").closest("li").should("not.have.class", "sr-only");
-        cy.contains("G").closest("li").should("not.have.class", "sr-only");
+        cy.contains("F").closest("li").invoke("outerWidth").should("be.gt", 1);
+        cy.contains("G").closest("li").invoke("outerWidth").should("be.gt", 1);
         cy.findByRole("button", { name: /less/i })
             .should("be.visible")
             .and("have.attr", "aria-expanded", "true");
@@ -85,7 +85,7 @@ describe("ExperienceSkills", () => {
         cy.findByRole("button", { name: /more/i }).click();
         cy.findByRole("button", { name: /less/i }).click();
 
-        cy.contains("F").closest("li").should("have.class", "sr-only");
+        cy.contains("F").closest("li").invoke("outerWidth").should("be.lte", 1);
         cy.findByRole("button", { name: /more/i })
             .should("be.visible")
             .and("have.attr", "aria-expanded", "false");

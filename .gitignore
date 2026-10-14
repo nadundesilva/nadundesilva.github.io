@@ -49,5 +49,7 @@ public/optimized-images
 public/images/next-image-export-optimizer-hashes.json
 
 # AI Agents
-.agent
-.claude
+.agents/*
+!.agents/skills/
+.claude/*
+!.claude/skills

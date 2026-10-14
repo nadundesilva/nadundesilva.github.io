@@ -7,6 +7,7 @@
 - Reduce duplication: cross-reference sections instead of repeating information.
 - Point to actual project files rather than duplicating their content here.
 - When updating, consolidate similar information; do not add standalone "new discovery" sections.
+- Knowledge that only matters for one kind of task (writing tests, images, blog MDX, etc.) belongs in a project skill at `.agents/skills/<name>/SKILL.md` (`.claude/skills` is a symlink to it, for Claude Code), not here — this file is loaded in every session. When recording a non-obvious learning: update the existing skill covering that task type; if it is specialised and no skill fits, create one (a `description` that states the trigger first, and narrow `paths:` globs only when a tight file set exists); if it applies across the board, add it here. Do not list skills in this file.
 - The `<!-- BEGIN:nextjs-agent-rules -->` … `<!-- END:nextjs-agent-rules -->` block at the very end of this file is written and re-added by `next dev` and brings its own `#` heading. Always keep it as the last thing in the file: add new content above it, never after it, or it ends up nested under that heading.
 
 ---
@@ -21,9 +22,7 @@
 6. [Code Style and Conventions](#6-code-style-and-conventions)
 7. [Architecture and Key Patterns](#7-architecture-and-key-patterns)
 8. [Theme and Styling](#8-theme-and-styling)
-9. [Testing](#9-testing)
-10. [CI/CD Pipeline](#10-cicd-pipeline)
-11. [Known Gotchas](#11-known-gotchas)
+9. [Known Gotchas](#9-known-gotchas)
 
 ---
 
@@ -162,10 +161,10 @@ components/
   content/                         # Semantic structure components (Title, Section, Link, etc.)
   icons/                           # Custom SVG icon components (e.g. LinkedInIcon)
   layout/                          # Navigation, breadcrumbs, scroll handling
-  primitives/                      # Hand-written primitives (see §7)
+  primitives/                      # Hand-written primitives
   theme/                           # fonts.ts, index.tsx (re-exports fonts)
   WebVitals.tsx
-shadcn/                            # CLI-managed only — never hand-edit (see §7)
+shadcn/                            # CLI-managed only — never hand-edit
   ui/                              # Badge, Breadcrumb, Button, Card, Drawer, Popover, Separator,
                                    # Spinner, Tooltip + index.tsx (barrel, hand-written)
   lib/
@@ -241,7 +240,7 @@ npm run test:unit            # Headless Jest run
 npm run test:unit:coverage   # + coverage report
 
 # E2E tests (requires running server)
-npm run cypress:e2e:open     # Interactive Cypress UI
+npm run cypress:open         # Interactive Cypress UI
 npm run cypress:e2e:run      # Headless Cypress run
 
 # Bundle analysis
@@ -264,7 +263,7 @@ npm run instrument
 
 **Prefer `npm run <script>` over `npx <tool>` whenever a script already covers it.** Every command above is an npm script — reach for it before typing the underlying `npx`/binary invocation directly, even for one-off local runs (e.g. `npm run cypress:component:run -- --spec <path>` instead of `npx cypress run --component --spec <path>`). This keeps local runs on the same flags/env as CI and gives every command a single source of truth.
 
-If no script covers what's needed, **fall back to `npx`/the raw binary** — that's the default, not a last resort to avoid. Don't add a script to `package.json` just because one run needed it. Only add one once a command has genuinely come up repeatedly (e.g. `npx shadcn add` stays `npx` per-component since each invocation targets a different component — see §7 — but a fixed, repeatedly-typed invocation like the coverage instrumentation step became `npm run instrument`).
+If no script covers what's needed, **fall back to `npx`/the raw binary** — that's the default, not a last resort to avoid. Don't add a script to `package.json` just because one run needed it. Only add one once a command has genuinely come up repeatedly (e.g. `npx shadcn add` stays `npx` per-component since each invocation targets a different component — but a fixed, repeatedly-typed invocation like the coverage instrumentation step became `npm run instrument`).
 
 ---
 
@@ -274,7 +273,7 @@ If no script covers what's needed, **fall back to `npx`/the raw binary** — tha
 
 Every source file (`.ts`, `.tsx`, `.css`, `.mdx`) must start with the copyright header. Use the year of original file creation. Do not update the year on edits.
 
-**Exception:** files under `shadcn/ui/` and `shadcn/lib/` (excluding their hand-written `index.tsx`/`index.ts` barrels) are CLI output — do not add the copyright header to them, and do not rename them to PascalCase. Use whatever `npx shadcn add` generates, verbatim. See §7 for the full rule.
+**Exception:** files under `shadcn/ui/` and `shadcn/lib/` (excluding their hand-written `index.tsx`/`index.ts` barrels) are CLI output — do not add the copyright header to them, and do not rename them to PascalCase. Use whatever `npx shadcn add` generates, verbatim.
 
 **`.ts`, `.tsx`, `.css` files** — standard block comment:
 
@@ -295,29 +294,6 @@ Every source file (`.ts`, `.tsx`, `.css`, `.mdx`) must start with the copyright 
  */
 ```
 
-**`.mdx` files** — Prettier's MDX formatter treats `/* */` block comments as Markdown content and mangles them (escapes `/*`, converts `*` lines to list items). HTML comments (`<!-- -->`) are also rejected by the MDX parser. The only format that survives Prettier and is valid MDX is a JS export wrapper:
-
-```mdx
-export const _copyright =
-    /*
-     * Nadun De Silva - All Rights Reserved
-     *
-     * This source code and its associated files are the
-     * confidential and proprietary information of Nadun De Silva.
-     * Unauthorized reproduction, distribution, or disclosure
-     * in any form, in whole or in part, is strictly prohibited
-     * except as explicitly provided under a separate license
-     * agreement with Nadun De Silva.
-     *
-     * Website: https://nadundesilva.com
-     *
-     * © 2023 Nadun De Silva. All rights reserved.
-     */
-    undefined;
-```
-
-This must appear as the very first thing in the file, before any `import` statements.
-
 ### TypeScript Conventions
 
 - Strict mode is enforced (`strict: true`, `noImplicitAny`, `strictNullChecks`).
@@ -325,7 +301,7 @@ This must appear as the very first thing in the file, before any `import` statem
 - React return types: `React.ReactElement` for single-element returns, `React.ReactNode` for children props.
 - Props interfaces use the `Props` suffix, defined directly above the component.
 - Default exports for components. Named exports for utilities, hooks, and types.
-- PascalCase filenames for components. camelCase for utilities and hooks. Exception: `shadcn/ui/*` and `shadcn/lib/*` keep the CLI's lowercase-kebab filenames (`badge.tsx`, `cn.ts`, etc.) — see §7.
+- PascalCase filenames for components. camelCase for utilities and hooks. Exception: `shadcn/ui/*` and `shadcn/lib/*` keep the CLI's lowercase-kebab filenames (`badge.tsx`, `cn.ts`, etc.).
 
 ### Import Ordering
 
@@ -388,57 +364,6 @@ Defined in [`constants/routes.ts`](./constants/routes.ts). `WebsiteHome.subRoute
 
 Current routes: `/experience`, `/achievements`, `/projects`, `/projects/personal`, `/testimonials`, `/blog-articles`, `/education`, `/education/certifications`. The file also exports `CvPdfPath = "/nadundesilva-cv.pdf"` — use this constant instead of hardcoding the CV PDF path.
 
-### Blog Articles
-
-**Directory:** `app/(content)/blog-articles/(articles)/{category}/{article-name}/page.mdx`
-
-**Every `page.mdx` must export:**
-
-```jsx
-export const blogMetadata = {
-    image: importedImageStaticData,
-    mediumUrl: "https://medium.com/...",
-    publishedDate: new Date("YYYY-MM-DD"),
-    keywords: ["keyword1", "keyword2"],
-};
-
-export const metadata = {
-    title: "Article Title",
-    description: "Article description.",
-    keywords: blogMetadata.keywords,
-    openGraph: {
-        images: [blogMetadata.image.src],
-        publishedTime: blogMetadata.publishedDate.toISOString(),
-        tags: blogMetadata.keywords,
-    },
-    twitter: {
-        images: [blogMetadata.image.src],
-    },
-};
-
-export default function Layout({ children }) {
-    return (
-        <BlogArticleLayout pageMetadata={metadata} blogMetadata={blogMetadata}>
-            {children}
-        </BlogArticleLayout>
-    );
-}
-```
-
-> **MDX TypeScript restriction:** MDX uses an acorn JavaScript-only parser. TypeScript syntax is **not** supported in `.mdx` files. Do not use `import type`, `: TypeName` annotations, or any other TypeScript-specific syntax inside `.mdx` files — they will cause a build failure: `Could not parse import/exports with acorn`.
-
-**MDX heading levels are shifted** (mapping in [`mdx-components.tsx`](./mdx-components.tsx)): `h1` (`#`) → `SectionHeading` (renders `h2`), `h2` (`##`) → `SubsectionHeading` (renders `h3`). The actual `h1` is always the `Title` component in the TypeScript wrapper — never write one in MDX. `h3`–`h6` (`###` through `######`) **throw a build error** — only two heading levels are available in articles.
-
-**Other MDX element mappings** (all defined in [`mdx-components.tsx`](./mdx-components.tsx)): `p` → `Paragraph`, `ul`/`ol` → `List`, `li` → `ListItem`, `a` → `Link` (always opens in a new tab, resolved relative to `${WEBSITE_PUBLIC_URL}/blog-articles/`), `code` → `InlineCodeSegment`, `pre` → `CodeBlock`, `hr` → `Separator`, `blockquote` → `LeftAccent` (italic).
-
-**Unsupported MDX syntax:** Raw markdown images (`![alt](src)`) and tables throw build errors — use the `<Image>` MDX component for images instead.
-
-**Category listing pages** (`{category}/page.tsx`) are TypeScript files using `ArticlesList` — they are not MDX and do not follow the blog article structure above.
-
-**MDX link behavior:** Do not add `target="_blank"` manually to links in MDX — see "Other MDX element mappings" above.
-
-**Blog discovery:** [`utils/server/blog-articles.ts`](./utils/server/blog-articles.ts) globs the filesystem to discover articles and compute reading time (using the `reading-time` package) for use in article list cards. `app/layout.tsx` (root layout) calls `getBlogArticleGroups(".")`, builds a route tree from the result, and passes it to `Layout` and `RouterBreadcrumbs` for the breadcrumb/nav tree. [`build/utils/rehype-reading-time.mjs`](./build/utils/rehype-reading-time.mjs) is a rehype plugin (wired into `next.config.mjs`) that also computes reading time at build time and injects a `data-reading-time-minutes` attribute into each article's HTML — this lets the client-side `ReadingProgress` component read a pre-computed value rather than deriving it from DOM text at runtime.
-
 ### Semantic HTML Components
 
 Never use raw HTML elements for document structure. Use from [`components/content/`](./components/content/):
@@ -461,24 +386,8 @@ Never use raw HTML elements for document structure. Use from [`components/conten
 
 Two separate homes, split by provenance:
 
-- **`shadcn/`** — CLI-managed only (see the rule below). `shadcn/ui/` holds the 9 shadcn primitives, `shadcn/lib/` holds the `cn()` utility, `shadcn/hooks/` is where shadcn-provided hooks would land if any are ever added.
+- **`shadcn/`** — CLI-managed only. `shadcn/ui/` holds the 9 shadcn primitives, `shadcn/lib/` holds the `cn()` utility, `shadcn/hooks/` is where shadcn-provided hooks would land if any are ever added.
 - **`components/primitives/`** — hand-written building blocks that render a specific visual segment (a gradient line, a bordered accent, a divider) but carry no semantic meaning on their own. Think of them like design tokens expressed as components.
-
-> **shadcn components must not be hand-edited — only regenerated via the CLI.** If a shadcn primitive needs to change (new upstream version, a variant tweak, a prop addition), run `npx shadcn add <component> --overwrite` and `git mv` the freshly generated file(s) into `shadcn/ui/` (or `shadcn/lib/`), rather than editing the existing file by hand. This keeps them byte-for-byte reproducible from the registry — a hand-edit today becomes a silent, undiscoverable diff from upstream that the next regeneration either clobbers or conflicts with. If a shadcn primitive doesn't support something the app needs, either wrap it from `components/primitives/` (composition, not modification) or raise it with the user before hand-patching the CLI output. This means shadcn files also skip the usual file-header and PascalCase-filename rules — use the CLI's output as-is (lowercase-kebab filenames, no copyright header); see the **File Header** and **TypeScript Conventions** sections in §6. The hand-written `index.tsx`/`index.ts` barrels in `shadcn/ui/` and `shadcn/lib/` are the one exception within `shadcn/` — they're ours, not CLI output, so they keep the normal header and convention.
-
-**shadcn primitives** (all exported from [`shadcn/ui/index.tsx`](./shadcn/ui/index.tsx)):
-
-| Primitive              | What it renders                                                                        |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| `Badge`                | Inline status/category label                                                           |
-| `Breadcrumb` (+ parts) | Accessible breadcrumb navigation components                                            |
-| `Button`               | Styled action button (with size/variant CVA)                                           |
-| `Card`                 | Bordered content card                                                                  |
-| `Drawer` (+ parts)     | Accessible drawer / bottom-sheet overlay components (built on `@base-ui/react/drawer`) |
-| `Popover` (+ parts)    | Accessible popover components                                                          |
-| `Separator`            | Full-width horizontal rule                                                             |
-| `Spinner`              | Animated loading indicator                                                             |
-| `Tooltip` (+ parts)    | Accessible tooltip components                                                          |
 
 **Hand-written primitives** (all exported from [`components/primitives/index.tsx`](./components/primitives/index.tsx)):
 
@@ -492,24 +401,12 @@ Two separate homes, split by provenance:
 | `ScrollReveal`           | Wraps children in a CSS scroll-triggered scale reveal (`animation-trigger`, fixed duration) |
 | `StaggerReveal`          | Wraps a list in staggered scroll-reveal animations                                          |
 
-> **shadcn component integrity rule:** Never partially remove sub-components from a shadcn component. If at least one sub-component is used anywhere in the project, the entire component (including all unused sub-components) stays. Only remove the whole component if none of its exports are used anywhere.
-
 > **`CardTitle` and HTML heading levels are orthogonal concerns:** `CardTitle` is a UI slot — it marks the title area of a card regardless of what HTML element renders it. Whether that title should also be a document heading (`<h2>`, `<h3>`, etc.) is a separate decision driven by the page's heading hierarchy. In list items (e.g. project cards, certification cards inside `<li>`), the list provides the document structure so `CardTitle` as a `<div>` is correct — no heading element is needed. For standalone named sections that users should be able to navigate to by heading (e.g. an Experience role), place an `<h3>` directly inside `CardContent` instead of using `CardTitle`.
 
 **When to add a new hand-written primitive:**
 
 - A visual pattern (gradient, border accent, decorative line, etc.) is used in more than one place.
 - The element has no semantic meaning by itself — it is purely visual.
-
-Export shadcn primitives from `shadcn/ui/index.tsx` (or the utility from `shadcn/lib/index.ts`) when regenerating; export hand-written primitives from `components/primitives/index.tsx`.
-
-### Component Selection Hierarchy
-
-When adding new UI functionality, follow this priority order:
-
-1. **shadcn component** — check `shadcn/ui/` first. If a suitable component does not exist there, check the shadcn registry (`npx shadcn add`) for one that can be scaffolded in (see the CLI-only rule in §7).
-2. **`@base-ui/react` primitive** — if no shadcn component fits semantically, use `@base-ui/react` directly. It is the unstyled primitive library that most shadcn components in this project are built on (exception: `Card` uses plain React).
-3. **Custom implementation** — only if neither option above applies. Before writing a custom component, ask the user for approval.
 
 ### Custom Link Component
 
@@ -522,96 +419,6 @@ When adding new UI functionality, follow this priority order:
 For button-styled links, use [`LinkButton`](./components/content/LinkButton.tsx). Never nest `<Link>` inside another `<Link>` or inside a `<button>` — this produces invalid HTML.
 
 **Always use the custom `Link` (or `LinkButton`) instead of importing `next/link` directly.** Even when passing a link as a `render` prop to a base-ui component (e.g. `BreadcrumbLink`), pass `<Link href={...} />` — not `<NextLink href={...} />`. The custom component adds the accessibility and rel-attribute behaviour described above.
-
-### Image Handling
-
-Always import `Image` from `next-image-export-optimizer`, not from `next/image`. Source images live in `assets/` and are imported as static modules (e.g. `import img from "@/assets/foo.webp"`). Optimized WebP output is written to `out/optimized-images/` during `npm run build`.
-
-**Metadata images use the optimized variant, never the original.** og:image, twitter:image, JSON-LD `image`, RSS enclosures and icons must go through `getOptimizedImage()` from [`utils/common/image-metadata.ts`](./utils/common/image-metadata.ts) rather than `StaticImageData.src`. Originals under `_next/static/media` are otherwise fetched at full size and (for raster images) are excluded from the PWA precache in `next.config.mjs` (`buildExcludes`). `getOptimizedImage` mirrors the optimizer's `-opt-<width>.WEBP` naming, which the library doesn't expose — the `seo.cy.tsx` image-fetch tests catch drift.
-
-#### Two image components — which to use
-
-There are two ways to render images; choose based on context:
-
-| Situation                                                                                                                                                        | What to use                                                  |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Standard content images** — any image that fits naturally into the text flow (e.g. floated article images, article hero)                                       | `Image` from `components/content/Image.tsx` (custom wrapper) |
-| **Custom UI images** — images that need precise layout control or special styling (e.g. logo grids, hero backgrounds, image galleries, certification thumbnails) | `Image` from `next-image-export-optimizer` directly          |
-
-The custom wrapper adds `rounded-sm`, a box-shadow, and a subtle hover lift — suitable for standalone content images. It auto-computes `sizes` based on context (full-width or float layout), so you rarely need to pass `sizes` explicitly. It also accepts a `float?: "left" | "right"` prop that applies the full float layout (`float-left`/`float-right`, `my-5 h-auto`, full-width below `md` (`w-full`), then vw-based widths: `md:w-[calc(33.3333vw-21.3333px)] lg:w-[calc(25vw-40px)] xl:w-[calc(20vw-64px)] 2xl:w-[calc(20vw-128px)]`, plus `mr-5`/`ml-5` side margin). Sizes are auto-computed when `float` is used — do not pass `sizes`:
-
-```tsx
-<Image src={img} alt="…" float="right" />
-```
-
-Use the direct import whenever the rounded/shadow defaults are unwanted, or when you need `fetchPriority`, `preload`, custom `object-*` behavior, or the dual dark/light image pattern.
-
-#### `sizes` attribute — mandatory on every fill image (direct usage)
-
-When using `next-image-export-optimizer` directly, `sizes` is **not** auto-generated. Without it the browser falls back to `100vw` for srcset selection and downloads unnecessarily large images. **Every direct `<Image fill …>` must have a `sizes` prop.** (The content wrapper from `components/content/Image.tsx` auto-sets `sizes` — see above.)
-
-Use the helpers from [`utils/common/image-sizes.ts`](./utils/common/image-sizes.ts):
-
-```tsx
-import {
-    generateSizesForContentBreakpoints,
-    generateSizesForColumnLayout,
-} from "@/utils/common/image-sizes";
-
-// Width narrows from full → 55% as viewport grows:
-<Image
-    src={…}
-    alt=""
-    fill
-    sizes={generateSizesForContentBreakpoints({
-        xl:      { viewportFraction: 0.55 }, // 55% × content width; auto-expands to 2xl with correct 640px padding
-        lg:      { viewportFraction: 0.65 }, // 65% × content width (viewport − lg padding)
-        sm:      { viewportFraction: 0.9  }, // 90% × content width (viewport − sm padding)
-        default: { viewportFraction: 1    }, // full content width (viewport − default padding)
-    })}
-/>
-
-// Fixed-pixel container (capped by max-w-*):
-<Image src={…} alt="" fill sizes={generateSizesForContentBreakpoints({ lg: { absolute: "360px" } })} />
-
-// Multi-column layout — specify only breakpoints where cols/gap/inset changes:
-const IMAGE_SIZES = generateSizesForColumnLayout({
-    lg: { cols: 3, gapPx: 16, columnInsetPx: 72 },
-    md: { cols: 2, gapPx: 16, columnInsetPx: 72 },
-    sm: { cols: 2, gapPx: 16, columnInsetPx: 56 },
-    default: { cols: 1, columnInsetPx: 56 },
-});
-<Image src={logo.srcLight} alt="" fill sizes={IMAGE_SIZES} className="object-contain dark:hidden" />
-<Image src={logo.srcDark}  alt="" fill sizes={IMAGE_SIZES} className="hidden object-contain dark:block" />
-```
-
-**`generateSizesForContentBreakpoints(sizesByBreakpoint)`** — accepts a map of `ContentBreakpoint` keys (`"2xl" | "xl" | "lg" | "md" | "sm" | "default"`) to a `ContentSizeEntry`:
-
-- **`{ viewportFraction: number }`** — fraction (0–1) of the content width; auto-computes `calc(fraction×100vw − fraction×padding)` using the **resolved** breakpoint's own padding. A single `xl: { viewportFraction: 0.55 }` with no `"2xl"` entry correctly generates `calc(55vw − 352px)` for 2xl (using 2xl's 640px padding, not xl's 320px).
-- **`{ absolute: string }`** — verbatim string (e.g. `"280px"`) for fixed-width containers.
-
-Each entry covers that breakpoint and all higher ones for which no entry is specified (auto-expansion). Rules:
-
-- **`"default"` (min-width 0)** is a first-class breakpoint that produces the unconditional fallback value (no `(min-width: …)` condition). When omitted, the built-in fallback `calc(100vw − 16px)` is used — equivalent to `default: { viewportFraction: 1 }`, so that entry is always redundant for `generateSizesForContentBreakpoints`.
-- **Never auto-emits a `md` entry.** The ContentContainer padding increases only 16 px at the sm→md boundary (48 px → 64 px), too small to shift srcset candidate selection — the `sm` entry already covers the md viewport range. Include `md` explicitly only when the rendered width genuinely changes there.
-- **`viewportFraction` entries auto-expand correctly** — the function uses the resolved breakpoint's own padding, so `xl: { viewportFraction: 0.2 }` with no `"2xl"` entry correctly generates `calc(20vw - 128px)` at 2xl (using 2xl's 640px padding). No explicit `2xl:` entry is needed.
-- **`absolute` entries are verbatim** — `{ absolute: "280px" }` is used unchanged at every breakpoint it covers. Add an explicit entry only when the pixel value genuinely differs at that breakpoint.
-- **Omit redundant higher-breakpoint entries.** If `lg: { absolute: "360px" }` already covers xl and 2xl with the same value, do not add `xl:` or `2xl:` entries — they produce identical output and are dead code.
-
-**`generateSizesForColumnLayout(layoutByBreakpoint)`** — same auto-expansion and `"default"` semantics for multi-column layouts. Each entry is `{ cols, gapPx?, columnInsetPx? }`. `gapPx` (default `0`) is the CSS gap between columns; `columnInsetPx` (default `0`) is the total fixed px of padding/margin inside each column item (e.g. `mx-5 p-2` → 2×20 + 2×8 = 56 px). Only specify breakpoints where any of these values genuinely changes.
-
-#### Dark / light logos — use two `<Image>` elements
-
-For logos and icons that have separate light and dark variants, render **two `<Image>` elements** with CSS visibility toggling:
-
-```tsx
-<Image src={logo.srcLight} alt="" fill sizes={IMAGE_SIZES} className="object-contain dark:hidden" />
-<Image src={logo.srcDark}  alt="" fill sizes={IMAGE_SIZES} className="hidden object-contain dark:block" />
-```
-
-This works before JavaScript loads (no FOUC) because it is pure CSS. A single `src`-switching approach would require `"use client"` and would flash on hydration.
-
----
 
 ## 8. Theme and Styling
 
@@ -645,34 +452,6 @@ Never hardcode color values. Use semantic Tailwind utility classes tied to desig
 - `text-primary`, `bg-primary`, `text-primary-foreground` — primary accent
 - `text-link` — link text color (theme-aware; used by the `Link` component)
 
-### Animation and Motion
-
-[`app/layout.tsx`](./app/layout.tsx) wraps the app with `<LazyMotion><MotionConfig reducedMotion="user">` — the `motion` library automatically honours `prefers-reduced-motion`. `LazyMotion` with `domAnimation` keeps the animation bundle lean. Prefer `motion/react` primitives (`m.div`, `AnimatePresence`, etc.) for interactive transitions. For CSS-only animations, use `tw-animate-css` utilities.
-
-**Library preference for animations:** For any animation that cannot be done through pure CSS (`motion-safe:` Tailwind utilities), use `motion/react` — its declarative `m.*` components or the standalone `animate()` function. Do **not** use `window.matchMedia` for reduced-motion detection or raw `requestAnimationFrame` loops. The root `MotionConfig reducedMotion="user"` handles reduced motion correctly for declarative `m.*` components; prefer those for stagger and scroll-triggered animations. Note: `useAnimate`'s imperative animate relies on `useReducedMotion()` internally which has an SSR/hydration bug in Next.js (always returns `null` at render time), so declarative `m.*` components are the reliable choice for correct reduced-motion support.
-
-### Reduced-Motion Guard
-
-**Rule: always use the positive guard.** Put motion CSS inside `motion-safe:` Tailwind variants so reduced-motion users never receive it. Never add transitions unconditionally and then cancel them with `motion-reduce:`.
-
-**Preference order** (highest to lowest):
-
-1. **Tailwind `motion-safe:`** — preferred because the component stays a Server Component. No `"use client"` required.
-2. **`useReducedMotion()` from `motion/react`** — for `"use client"` components that need imperative control (e.g. scroll behavior, JS-driven animation logic).
-
-```tsx
-// BEST — pure Tailwind, server-component safe
-className =
-    "motion-safe:transition-transform motion-safe:duration-200 hover:-translate-y-0.5";
-
-// OK — client component with imperative JS behavior
-const reducedMotion = useReducedMotion(); // from motion/react
-element.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" });
-
-// WRONG — unconditional transition cancelled with motion-reduce:
-className = "transition-transform duration-200 motion-reduce:transition-none";
-```
-
 ### Avoid `!important`
 
 Do not use `!important` in Tailwind class strings or `@layer` blocks. Exhaust specificity options first.
@@ -683,301 +462,9 @@ Do not use `!important` in Tailwind class strings or `@layer` blocks. Exhaust sp
 
 Co-located styles live alongside the file that owns them, named to match the importing file (e.g. `page.css` for `page.tsx`, `NotFound.css` for `NotFound.tsx`, `layout.css` for `layout.tsx`), and are imported via JavaScript (`import "./page.css"`) from the owning component.
 
-### Page-scoped Animation Tokens
-
-For animations that are specific to one page or component (not shared design tokens), use this pattern:
-
-1. **Define a CSS custom property** in the `:root` block of the co-located CSS file, directly above the corresponding `@keyframes`:
-
-```css
-/* page.css */
-:root {
-    --animate-home-timeline-dot-pulse: home-timeline-dot-pulse 2.5s ease-out infinite backwards;
-}
-
-@keyframes home-timeline-dot-pulse { … }
-```
-
-2. **Reference it in JSX** using Tailwind v4's CSS variable shorthand:
-
-```tsx
-className = "motion-safe:animate-(--animate-home-timeline-dot-pulse)";
-```
-
-This keeps the animation timing values co-located with their keyframes, the CSS variable is inspectable in DevTools, and Tailwind's `motion-safe:` variant applies correctly.
-
 ---
 
-## 9. Testing
-
-### Testing Philosophy
-
-**Unit tests** (`*.test.ts`, colocated next to the source file) — pure logic with no DOM:
-
-- Functions over the `constants/*` and `utils/*` data (dates, route resolution, `sizes` string builders, metadata builders, skill-usage indexing)
-- Build-time helpers (`build/utils/*` rehype plugins)
-- Node-only modules that neither Cypress runner can load (`utils/server/*` — `fs`/`glob`)
-- A pure helper reached only through an async wrapper may be `export`ed solely for its `*.test.ts` (e.g. `groupArticles` in `utils/server/blog-articles.ts`, whose error paths need hand-built fixtures) — mark such an export with a comment saying so, so it is not mistaken for dead code
-- Run with `npm run test:unit` — Jest via `next/jest`, `testEnvironment: "node"`, no server, no browser
-- Import test globals explicitly: `import { describe, expect, it } from "@jest/globals";` — the root `tsconfig.json` puts Cypress's Chai `expect` in global scope, so a Jest global `expect` would clash. Assertions are Jest matchers (`toBe`, `toEqual`, `toMatchObject`, `toThrow`), not Chai (`.to.eq`, …).
-- `next/jest` reuses the project's SWC transform, tsconfig `paths`, and asset mocks, so these specs import the same `@/constants/*` chain (raw `.png` imports, `export enum`) the app does. ESM-only npm packages must be listed in `next.config.mjs` `transpilePackages` to be loadable (e.g. `hast-util-to-string`).
-
-**Component tests** (`cypress/component/`) — component-specific behaviors in isolation:
-
-- Props variants and render paths
-- Accessibility attributes (ARIA roles, labels, `role=list`, `dateTime`, etc.)
-- User interactions contained within a single component (open/close, clipboard, scroll state)
-- No running server required (`cy.mount()` only)
-
-**E2E tests** (`cypress/e2e/`) — website-level flows:
-
-- Routing and navigation between pages
-- Breadcrumb navigation
-- SEO metadata, JSON-LD, sitemap, RSS
-- Theme persistence across reload
-- Server-generated or statically-exported content correctness
-
-**Choose the cheapest level that can verify the behavior — unit > component > E2E.** A behavior moves up a level only when the level below genuinely cannot reach it:
-
-- **Unit** — the default. Use it unless the assertion needs a DOM or rendered output.
-- **Component** — only when the behavior needs a mounted component (`cy.mount()`), but not a real URL, page load, or cross-page flow.
-- **E2E** — only for routing, cross-page flows, theme persistence across reload, and server-generated / statically-exported output correctness (SEO metadata, JSON-LD, sitemap, RSS).
-
-If a test _can_ be a unit test it _must_ be one — don't mount a component to exercise a pure helper. Likewise don't reach for E2E when `cy.mount()` suffices: `ReadingProgress` scroll math is a component test (`cypress/component/components/blog-articles/ReadingProgress.cy.tsx`), not an E2E step; the `sizes` string builders are unit tests, not component tests over a rendered image.
-
-**Don't test behavior the app doesn't use.** Only cover props/variants/paths actually exercised somewhere in `app/` or `components/`. Before adding a test for a prop or variant, grep for a real caller passing it — if none exists, skip the test rather than adding one "for completeness." This applies especially to shadcn-derived primitives (`components/primitives/`): they ship with a much larger surface (variants, directions, sizes) than this site ever uses, and testing the unused parts just adds maintenance cost for behavior nobody depends on. Example: `Drawer`'s `swipeDirection` prop supports `down | up | left | right`, but [`Layout.tsx`](./components/layout/Layout.tsx) only ever renders `swipeDirection="up"` — so `down` (the component's own default), `left` and `right` aren't tested.
-
-**A component's behavior is asserted in that component's own spec, not a consumer's.** If `ChildComponent` decides how it opens, closes, or renders internally, that mechanism is pinned in `ChildComponent.cy.tsx` — a consumer spec (`ParentComponent.cy.tsx`) only asserts the decisions _it_ makes: which props it passes, how it wires children together, whether real data reaches a threshold the child reacts to. Re-asserting the child's own mechanism from the parent's spec is duplicate maintenance surface with no additional signal. The one exception is when mounting the component directly is not possible — e.g. an async Server Component, which React's client renderer rejects (see `ArticlesGroup.cy.tsx`'s comment) — in which case the nearest mountable sub-component stands in, with a comment recording why.
-
-#### Name tests after behavior, not implementation
-
-Every `it()` title must state the **user-observable behavior** being verified — what a user, screen reader, or crawler experiences — never the mechanism the component uses to achieve it.
-
-**The test:** would a refactor that preserves user-observable behavior falsify this name? Swap `<div>` → `<span>`, rename a CSS class, change `ul` → `ol`. If the name becomes wrong but nothing observable changed, the name is implementation-coupled — rewrite it.
-
-Asserting on the mechanism is fine, and is often the only practical way to check a visual behavior. Only the _name_ must rise above it:
-
-```tsx
-// WRONG — name is the mechanism
-it("sets height to 100vh", …)
-it("renders children as a ul with role=list", …)
-it("sets the dateTime attribute to ISO format", …)
-
-// RIGHT — name is the behavior, assertion is still the mechanism
-it("spans the full height of the viewport", () => {
-    cy.get("img").should("have.css", "height", "100vh");
-});
-it("announces its items as a list to screen readers", …)
-it("exposes the date in machine-readable form for crawlers and assistive tech", …)
-```
-
-Three corollaries:
-
-- **The name must not claim more than the assertion proves.** `"renders key page content"` is unverifiable — name the specific thing checked.
-- **`describe()` names the subject; `it()` names the behavior.** `describe("DateInfo")` and `describe("sitemap")` are correct — do not push behavior up into them.
-- **Never name a test after a prop.** `when size='sm'` is the caller's API, not the user's experience; name the visual result instead (`in its compact form`).
-
-- **A prop name is fine as input context, not as a substitute for the effect.** `"applies the compact size when size='sm'"` uses the prop _instead of_ describing the outcome — name the visual result instead (`"uses tighter spacing in its compact form"`). But naming the prop _while also_ stating the effect it causes is fine and often clearer, e.g. `"clamps to the visible range when startIndex is out of bounds"` — the prop tells the reader which input scenario is under test; the behavior clause is still what's being verified.
-
-#### Assert computed CSS for visual behavior, not Tailwind class names
-
-For a visual/layout behavior (size, spacing, float, color), prefer `cy.get(...).should("have.css", "<property>", "<value>")` — the computed style — over `should("have.class", "<tailwind-class>")`. A class-name assertion is coupled to the utility class chosen today; if the class is renamed or replaced with an equivalent one during a refactor, the test fails even though the rendered behavior is unchanged. `have.css` checks the actual rendered outcome, matching the "name and assert the behavior, not the mechanism" rule above.
-
-**Exception — color values.** Do not assert literal computed colors (`background-color`, `border-color`, etc.) — the "never hardcode color values" rule (§8, Color Tokens) applies to test assertions too: the resolved value is theme-dependent and its serialization (oklch vs. rgb) isn't stable. For a color-driven variant, either keep the class assertion (and name the test for the variant's effect, not the class), or assert that the computed color differs between two variants rather than asserting a literal value.
-
-#### Assert URL-shaped contracts exactly, not by substring
-
-For `link[rel="canonical"]`, `og:url`, JSON-LD `@id`/`sameAs`, and similar tags whose entire purpose is to identify one exact URL, assert exact equality (`.to.eq(...)`), never `.include(...)` or a loose `.match(/^https?:\/\//)`. A substring or protocol-only match still passes on a wrong host or a corrupted `metadataBase` — precisely the regression these tags exist to catch.
-
-**Exception — component API surface.** A `data-*` attribute or ARIA attribute that is a component's own public contract (e.g. `data-size="sm"`) is not an internal implementation detail to be swapped out under refactor — assert it directly.
-
-#### The selector must mirror the element's meaning, not its position
-
-A selector should name _what the element is_, the same thing its accessible role/name conveys to assistive tech — `findByRole` with a `name`, an accessible label, visible text, a contract `data-*`. The selector and the a11y tree should be picking out the element for the same reason. A structural CSS selector (`[aria-hidden='true'] div`, `.some-wrapper > span:nth-child(2)`) instead names a _position in the current markup_: it matches by accident of nesting, silently starts matching a different element after a refactor that leaves behavior unchanged, and tells a reader nothing about what was selected.
-
-When the element genuinely carries no meaning in the a11y tree — a decorative bar in a chart, an unlabeled visual slot — give it an explicit handle in the component. **Every attribute that exists only for tests lives under the `data-test` namespace:** `data-testid` for identity (this is what `findByTestId` queries — the `@testing-library` default, not reconfigured here), and `data-test-<name>` for any _state_ under test, selected with a plain attribute selector (`.filter('[data-test-filled="true"]')`, `cy.get('[data-test-open]')`). There is no `findBy*` helper for the `data-test-<name>` flags and none is needed — attribute selectors are how variant state is queried. The shared `data-test` prefix keeps test-only hooks greppable and unmistakable for production behavior.
-
-Derive a state flag from the **same expression** that drives the visual state, in one place, so the two cannot diverge (a test that still passes while the visual is wrong is worse than no test):
-
-```tsx
-const isFilled = i <= bars;
-// …
-<div
-    data-test-filled={isFilled}
-    className={cn(isFilled ? filledClass : emptyClass)}
-/>;
-```
-
-Such a test-only attribute is part of the component's public test contract (per the "component API surface" exception above), not an implementation leak. Never distinguish element states by Tailwind class presence (`el.className.includes("bg-foreground/15")`) — that is the class-name coupling the section above forbids; expose the state as a `data-test-<name>` attribute instead.
-
-### E2E with Cypress
-
-- Test files: [`cypress/e2e/`](./cypress/e2e/) (`.cy.tsx` extension)
-- Custom commands: [`cypress/support/commands.ts`](./cypress/support/commands.ts)
-- Configuration: [`cypress.config.ts`](./cypress.config.ts)
-
-**Viewport:** `1280x768`. This is above the `lg` Tailwind breakpoint where the desktop nav renders — below it, the mobile drawer appears, breaking navigation tests. The exact breakpoint is in [`components/layout/Layout.tsx`](./components/layout/Layout.tsx) (currently `lg:` / 1024 px). Do not change the viewport without understanding this.
-
-**Spec bundler:** `cypress.config.ts`'s `e2e.setupNodeEvents` registers a `file:preprocessor` (see its comments for the mechanics/gotchas). This is what lets e2e specs import anything under the `constants/logos.ts` chain — `pages.cy.tsx`, `home.cy.tsx`, `layout.cy.tsx`, `navigation.cy.tsx` import real `@/constants/*` values instead of duplicating literals. The `package.json` `overrides` pin it relies on works around a known, still-open upstream bug: [cypress#34025](https://github.com/cypress-io/cypress/issues/34025).
-
-`WEBSITE_PUBLIC_URL` and its derivatives (`SCHEMA_PERSON_ID`, `SCHEMA_WEBSITE_ID`) are a deliberate exception — `seo.cy.tsx` and `blog-articles.cy.tsx` keep those as local literals rather than importing them, because they're the assertion _target_: importing the real value would make the canonical-URL/JSON-LD assertions tautological against whichever shell ran Cypress, rather than against the shell that built the site under test.
-
-**Custom commands:**
-
-| Command                          | Description                                                                                   |
-| -------------------------------- | --------------------------------------------------------------------------------------------- |
-| `cy.loadPage(url)`               | Visit URL, reset scroll, set light color scheme, and wait for route loading spinners to clear |
-| `cy.clickNavLink(name)`          | Click nav link by accessible name                                                             |
-| `cy.clickBreadcrumbByName(name)` | Click breadcrumb by text                                                                      |
-| `cy.clickBreadcrumbByHref(href)` | Click breadcrumb by href                                                                      |
-| `cy.clickLinkByHref(href)`       | Click any link by href                                                                        |
-| `cy.assertVisibleImagesLoaded()` | Asserts every visible `<img>` on the current page finished loading                            |
-
-**Custom command vs. plain support function:** any reusable logic that calls a `cy.*` API internally — including a single helper reused across a handful of `it()` blocks in one spec, not just cross-spec utilities — belongs in `commands.ts` as a `Cypress.Commands.add`, with a matching `Chainable` entry in [`cypress/index.d.ts`](./cypress/index.d.ts). This applies even when the helper is invoked standalone rather than chained off a previous subject and doesn't return one — `cy.assertVisibleImagesLoaded()` is called as its own statement at every call site and still belongs here.
-
-A plain exported function under `cypress/support/` (e.g. [`routes.ts`](./cypress/support/routes.ts), [`xml.ts`](./cypress/support/xml.ts)) is reserved for logic with **zero Cypress dependency** — string/DOM parsing, constant derivation, anything that would run identically in a plain Node script outside Cypress. The moment a helper calls `cy.get`/`cy.wrap`/any Cypress API, it is a command, not a utility function, regardless of whether it's chained.
-
-**Query preference:** Use Testing Library queries (`findByRole`, `findByTestId`). Prefer `findByRole` with `name` matchers over `data-testid`.
-
-**Cypress tasks** (registered in `cypress.config.ts`):
-
-- `discoverBlogArticles(subPath)` — returns array of blog article URLs under a sub-path.
-- `discoverBlogArticleSubGroups(subPath)` — returns array of article group URLs under a sub-path.
-
-Use these tasks in tests that need to enumerate blog articles dynamically.
-
-### Component Tests with Cypress
-
-Component tests mount individual components in isolation using the Cypress webpack devServer. No running server is required.
-
-- Test files: [`cypress/component/`](./cypress/component/) (`.cy.tsx` extension, mirroring the source structure)
-- Spec pattern: `cypress/component/**/*.cy.{ts,tsx}` (set in `cypress.config.ts`)
-- Global providers (`ThemeProvider`, `LazyMotion + MotionConfig`, `TooltipProvider`) are set up in [`cypress/support/component.ts`](./cypress/support/component.ts) and automatically applied to every `cy.mount()` call
-- `reducedMotion="always"` is set in tests so animations never run — tests are deterministic
-
-**File naming convention:** `cypress/component/<source path relative to repo root>`, with `.tsx` → `.cy.tsx`. This is a full mirror of the repo root, matching the source filename's casing exactly — the test's path always resolves to a real source file by stripping `cypress/component/` and swapping the extension:
-
-- `components/content/Link.tsx` → `cypress/component/components/content/Link.cy.tsx`
-- `app/404/NotFound.tsx` → `cypress/component/app/404/NotFound.cy.tsx`
-- `app/(home)/_content/sections/components/Foo.tsx` → `cypress/component/app/(home)/_content/sections/components/Foo.cy.tsx`
-- `shadcn/ui/badge.tsx` → `cypress/component/shadcn/ui/badge.cy.tsx` (map to the file that _defines_ the component, not the `@/shadcn/ui` barrel it's imported through)
-
-```bash
-npm run cypress:component:run   # Headless component test run
-npm run cypress:component:open  # Interactive component test UI
-```
-
-### Unit Tests with Jest
-
-Pure-logic specs run under Jest (`next/jest` preset, `testEnvironment: "node"`) — no
-browser, no `cy.mount()`, no running server.
-
-- Test files: colocated as `<source>.test.ts` next to the module they cover (e.g.
-  `constants/date.ts` → `constants/date.test.ts`). `nyc.config.mjs`'s include glob
-  already excludes `*.test.*`, and the root `tsconfig.json` type-checks them.
-- Config: [`jest.config.mjs`](./jest.config.mjs) (`.mjs` because `package.json` is
-  `"type": "module"`). `collectCoverageFrom` covers `constants/`, `utils/`, `build/`.
-- Import globals explicitly from `@jest/globals` (see Testing Philosophy above for why).
-- `cy.clock()` has no place here — freeze time with
-  `jest.useFakeTimers()` + `jest.setSystemTime(date)`.
-- CI: the `run-unit-tests` job in [`deploy-site.yaml`](./.github/workflows/deploy-site.yaml)
-  runs `npm run test:unit:coverage` and uploads to the codecov `unit-tests` flag.
-
-```bash
-npm run test:unit             # Headless Jest run
-npm run test:unit:coverage    # + coverage report
-```
-
-### Console errors fail tests (both suites)
-
-[`cypress/support/console-guard.ts`](./cypress/support/console-guard.ts) makes **any
-`console.error` or uncaught exception fail the test** — wired into
-[`cypress/support/e2e.ts`](./cypress/support/e2e.ts) (via `window:before:load`) and
-[`cypress/support/component.ts`](./cypress/support/component.ts) (via a `beforeEach`
-`cy.window()` patch). This is what catches React hydration errors (e.g. #418) that
-would otherwise pass silently.
-
-- **Fails fast, at the error.** The wrapped `console.error` re-throws from a
-  microtask, so it surfaces as a test failure on the offending test — sibling
-  tests in the same spec file still run. (A plain synchronous re-throw doesn't
-  work: React's render wraps `console.error` calls in try/catch.) The failure
-  lists **every** console error from the incident (a React/browser incident logs
-  its calls in one synchronous burst, and Cypress halts the test on the first
-  failure).
-- **Allowing a known-benign message:** `cy.allowConsoleError(pattern)` (string =
-  literal substring, or a regex) whitelists matching messages **for the current
-  test only**. Pass the _specific_ expected message, not a catch-all — the
-  deliberate throw-in-`ErrorBoundary` tests (`mdx-components.cy.tsx`,
-  `ProgressFab.cy.tsx`, `Heading.cy.tsx`) each allow the exact error string they
-  assert on, and `global-error.cy.tsx` allows the two exact React-internal
-  messages that a full `<html><body>` triggers under isolated mounting. It is
-  only legitimate for (a) framework/runner noise or (b) a deliberately-triggered,
-  asserted error path — never to quiet an error the app or a test should handle.
-- `GLOBAL_ALLOWLIST` in `console-guard.ts` holds the one unavoidable piece of
-  tooling noise (`[webpack-dev-server] Invalid Host/Origin header`). Keep it tiny.
-- The e2e `IntersectionObserver` mock lives in the same `window:before:load` hook
-  but is unrelated — it forces `whileInView` animations to run headless.
-
-### Running E2E Tests Locally
-
-**Critical:** `start-server.sh` must be run with `source`, not `bash` — see [§10 — Server Scripts](#server-scripts) for details.
-
-```bash
-# Requires a server to be running first
-npm run cypress:e2e:open    # Interactive test runner UI
-npm run cypress:e2e:run     # Headless run
-```
-
-For the full CI-equivalent flow with coverage instrumentation:
-
-```bash
-BUILD_TYPE=test npm run instrument
-npm run build
-source .github/scripts/start-server.sh
-npm run cypress:e2e:run
-bash .github/scripts/stop-server.sh
-```
-
-**`npm run instrument` rewrites source files in place** (via `nyc instrument --in-place`) — it is not a build-output step, it mutates `.ts`/`.tsx` files under version control. Only run it when coverage numbers are actually needed; the plain `npm run build` + `npm run serve` flow above (no coverage) is sufficient for local verification. If you do run it, revert the instrumented files afterwards (`git checkout -- <instrumented files>`, or `git stash`/`git clean` if nothing else is staged) before finishing — do not leave instrumented source committed or lying in the working tree.
-
----
-
-## 10. CI/CD Pipeline
-
-Pipeline: [`.github/workflows/deploy-site.yaml`](./.github/workflows/deploy-site.yaml)
-
-### Stages
-
-Jobs 1–4 run in parallel on every push/PR. Job 5 runs independently. Jobs 6–8 all depend on job 5 and run in parallel with each other. Job 9 depends on all of the above.
-
-1. **`run-project-linter`** — `npm run lint` (ESLint + Stylelint)
-2. **`run-super-linter`** — GitHub Super Linter (markdown, YAML, shell, etc.)
-3. **`run-vulnerability-analysis`** — Trivy scan → SARIF → GitHub Security tab
-4. **`run-e2e-tests`** — 4-browser matrix (electron, chrome, firefox, edge) with NYC coverage instrumentation + CodeCov upload
-5. **`build-site`** — Production build, uploads `out/` as artifact
-6. **`check-links`** — Lychee link validation on built site (two passes: general links and bot-protected sites)
-7. **`check-site-build`** — 4-browser matrix E2E on the exported artifact
-8. **`run-website-audit`** — Lighthouse CI audit
-9. **`deploy-site`** — Cloudflare Pages deploy (push to `main` only, requires all above)
-
-### Server Scripts
-
-- [`start-server.sh`](./.github/scripts/start-server.sh) generates a self-signed TLS cert, starts `npx serve` on port 8080 (with an iptables NAT rule redirecting port 443 → 8080), adds `nadundesilva.com` to `/etc/hosts`, installs the cert as trusted CA, and exports `NODE_EXTRA_CA_CERTS` and `SERVE_PID`.
-- [`stop-server.sh`](./.github/scripts/stop-server.sh) kills the server using `SERVE_PID`.
-
-**Critical:** `start-server.sh` must use `source` (not `bash`) — the exported env vars must survive into the calling shell session.
-
-```yaml
-# CORRECT
-- run: source ./.github/scripts/start-server.sh
-
-# WRONG — env vars are lost, Cypress will fail to connect
-- run: bash ./.github/scripts/start-server.sh
-```
-
----
-
-## 11. Known Gotchas
+## 9. Known Gotchas
 
 ### CSP `unsafe-eval` is only added in development and test
 
@@ -986,22 +473,6 @@ Jobs 1–4 run in parallel on every push/PR. Job 5 runs independently. Jobs 6–
 ### Production HTTP security headers live in `public/_headers`
 
 HTTP security headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Permissions-Policy`) are served via [`public/_headers`](./public/_headers) — Cloudflare Pages reads this file automatically. The CSP is set separately via `<meta httpEquiv="Content-Security-Policy">` in [`app/layout.tsx`](./app/layout.tsx) so it can include the conditional `'unsafe-eval'` for dev/test builds.
-
-Note: The CI LHCI server (Caddy Docker via [`start-server.sh`](./.github/scripts/start-server.sh)) parses `${WEBSITE_BUILD_DIR}/_headers` and translates each header under the `/*` pattern into a Caddy `header` directive, so security headers are present during CI LHCI audits.
-
-### Cypress E2E tests must run against the production static export, not the dev server
-
-Running `npm run cypress:e2e:run` while the Next.js dev server (`npm run dev`) is active will produce intermittent and persistent test failures. The root cause is HMR: in dev mode, the hot-update mechanism fires immediately after soft-navigation RSC fetches, causing the router to treat its tree as stale and abort `pushState`. The URL never updates, so `cy.location("pathname")` assertions time out. MDX article pages are especially susceptible because they trigger more HMR work (images, nested layouts, more code paths).
-
-**Always stop the dev server before running Cypress.** For quick local testing without coverage instrumentation:
-
-```bash
-npm run build
-npm run serve -- -l 3000 &
-npm run cypress:e2e:run
-```
-
-The full CI-equivalent flow (with coverage) is documented in §9.
 
 ### Layout-level components must read the route from `useSelectedLayoutSegments()`, not `usePathname()`
 
@@ -1029,14 +500,6 @@ re-focuses the detached popup node a frame later, knocking focus back to `<body>
 `onOpenChange` handler restores focus to the toggle synchronously (keyed on
 `eventDetails.reason`), before unmount — nothing is left to clobber it. Covered by
 `cypress/e2e/navigation.cy.tsx` ("closes the drawer with Escape and returns focus…").
-
-### `ContentContainer` padding must be mirrored in `image-sizes.ts`
-
-`CONTENT_BREAKPOINTS` in [`utils/common/image-sizes.ts`](./utils/common/image-sizes.ts) hardcodes the min-width and padding pixel values for each breakpoint. The padding values mirror the `px-*` Tailwind classes in [`components/layout/ContentContainer.tsx`](./components/layout/ContentContainer.tsx). Both `generateSizesForContentBreakpoints` and `generateSizesForColumnLayout` derive their `calc()` strings from these values. If `ContentContainer`'s padding classes change, update `CONTENT_BREAKPOINTS` in the same PR or all `sizes` strings will be wrong.
-
-### `Logo` takes a `height` (em) and derives `sizes` from it
-
-Logos are height-limited (`object-scale-down`), so their rendered width is `height × aspect ratio`, not the container width. [`Logo`](./components/content/Logo.tsx) sets the box height from its `height` prop (em) and emits `sizes` as `height × width/height` in `em`. Do not size a logo through a `h-[…em]` class — the `sizes` would fall back to the container width and the browser would fetch a larger srcset candidate than needed. `em` in `sizes` resolves against the root font size (not the element's), which matches the page only while no ancestor overrides `font-size`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -91,9 +91,9 @@ describe("blog article features", () => {
                     const enclosure = childrenNamed(item, "enclosure")[0];
 
                     expect(
-                        enclosure.getAttribute("url"),
+                        new URL(enclosure.getAttribute("url")!).origin,
                         item.outerHTML,
-                    ).to.include(WEBSITE_PUBLIC_URL);
+                    ).to.eq(new URL(WEBSITE_PUBLIC_URL).origin);
                     void expect(enclosure.getAttribute("type"), item.outerHTML)
                         .to.not.be.empty;
                 });
