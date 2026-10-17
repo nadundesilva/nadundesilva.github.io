@@ -32,7 +32,7 @@ jobs:
                   fetch-depth: 0
                   persist-credentials: false
             - name: Setup pnpm and Node.js
-              uses: pnpm/setup@v3
+              uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
               with:
                   cache: true
                   require-lockfile: true
@@ -105,7 +105,7 @@ jobs:
                       .lighthouserc.cjs
                       package.json
             - name: Setup pnpm and Node.js
-              uses: pnpm/setup@v3
+              uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
               with:
                   install: false
             - name: Run Lighthouse Audit
