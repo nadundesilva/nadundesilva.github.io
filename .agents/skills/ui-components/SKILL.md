@@ -1,6 +1,6 @@
 ---
 name: ui-components
-description: "How to choose and build UI components in this repo: the selection order (shadcn/ui, then @base-ui/react, then a custom component only with the user's approval), the hand-written primitives in components/primitives, the custom Link and LinkButton, class-variance-authority variants, and the rules for the CLI-managed shadcn/ directory (never hand-edit, how to regenerate, the integrity rule). Make sure to use this skill whenever adding or changing a component, or any UI that needs a button, card, badge, popover, tooltip, drawer, overlay, link, decorative accent or variant props, and whenever touching shadcn/ or running `npx shadcn add`, even if the request never names a component."
+description: "How to choose and build UI components in this repo: the selection order (shadcn/ui, then @base-ui/react, then a custom component only with the user's approval), the hand-written primitives in components/primitives, the custom Link and LinkButton, class-variance-authority variants, and the rules for the CLI-managed shadcn/ directory (never hand-edit, how to regenerate, the integrity rule). Make sure to use this skill whenever adding or changing a component, or any UI that needs a button, card, badge, popover, tooltip, drawer, overlay, link, decorative accent or variant props, and whenever touching shadcn/ or running `pnpm dlx shadcn add`, even if the request never names a component."
 ---
 
 # UI Components
@@ -73,7 +73,7 @@ For button-styled links use `components/content/LinkButton.tsx`. Even when passi
 
 ## Working with `shadcn/`
 
-> **shadcn components must not be hand-edited — only regenerated via the CLI.** If a shadcn primitive needs to change (new upstream version, a variant tweak, a prop addition), run `npx shadcn add <component> --overwrite` and `git mv` the freshly generated file(s) into `shadcn/ui/` (or `shadcn/lib/`), rather than editing the existing file by hand. This keeps them byte-for-byte reproducible from the registry — a hand-edit today becomes a silent, undiscoverable diff from upstream that the next regeneration either clobbers or conflicts with.
+> **shadcn components must not be hand-edited — only regenerated via the CLI.** If a shadcn primitive needs to change (new upstream version, a variant tweak, a prop addition), run `pnpm dlx shadcn add <component> --overwrite` and `git mv` the freshly generated file(s) into `shadcn/ui/` (or `shadcn/lib/`), rather than editing the existing file by hand. This keeps them byte-for-byte reproducible from the registry — a hand-edit today becomes a silent, undiscoverable diff from upstream that the next regeneration either clobbers or conflicts with.
 
 - If a shadcn primitive doesn't support something the app needs, either wrap it from `components/primitives/` (composition, not modification) or raise it with the user before hand-patching the CLI output.
 - shadcn files skip the usual file-header and PascalCase-filename rules: use the CLI's output as-is (lowercase-kebab filenames, no copyright header).

@@ -15,6 +15,6 @@ Component tests mount individual components in isolation using the Cypress webpa
 - `shadcn/ui/badge.tsx` → `cypress/component/shadcn/ui/badge.cy.tsx` (map to the file that _defines_ the component, not the `@/shadcn/ui` barrel it's imported through)
 
 ```bash
-npm run cypress:component:run   # Headless component test run
-npm run cypress:open            # Interactive UI (pick Component testing)
+pnpm run cypress:component:run   # Headless component test run
+pnpm run cypress:open            # Interactive UI (pick Component testing)
 ```

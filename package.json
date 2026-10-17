@@ -6,10 +6,10 @@
     "scripts": {
         "dev": "NODE_ENV='development' NEXT_PUBLIC_WEBSITE_URL='http://localhost:3000' next dev --webpack -p 3000",
         "build": "NODE_ENV='production' next build --webpack && next-image-export-optimizer",
-        "build:analyze": "ANALYZE='true' npm run build",
+        "build:analyze": "ANALYZE='true' pnpm run build",
         "serve": "serve out",
-        "start": "npm run build && npm run serve",
-        "lint": "npm run lint:ts && npm run lint:css",
+        "start": "pnpm run build && pnpm run serve",
+        "lint": "pnpm run lint:ts && pnpm run lint:css",
         "lint:ts": "eslint .",
         "lint:css": "stylelint \"**/*.css\"",
         "format:check": "prettier . --check",
@@ -55,6 +55,7 @@
         "@cypress/code-coverage": "4.0.3",
         "@cypress/webpack-batteries-included-preprocessor": "5.0.0",
         "@istanbuljs/nyc-config-typescript": "1.0.2",
+        "@jest/globals": "30.5.2",
         "@mdx-js/loader": "3.1.1",
         "@mdx-js/react": "3.1.1",
         "@next/bundle-analyzer": "16.3.5",
@@ -75,6 +76,7 @@
         "eslint": "9.39.5",
         "eslint-config-next": "16.3.5",
         "eslint-config-prettier": "10.1.8",
+        "hast-util-to-string": "3.0.1",
         "husky": "9.1.7",
         "jest": "30.5.2",
         "lint-staged": "17.5.1",
@@ -92,16 +94,20 @@
         "stylelint-config-standard": "40.0.0",
         "stylelint-config-tailwindcss": "1.0.1",
         "tailwindcss": "4.3.3",
-        "typescript": "6.0.3"
+        "typescript": "6.0.3",
+        "wrangler": "4.150.0"
     },
     "lint-staged": {
         "*.{tsx,ts,js}": "eslint --no-cache --fix",
         "*.css": "stylelint --fix",
         "*.{tsx,ts,js,mdx}": "prettier --write"
     },
-    "overrides": {
-        "@cypress/webpack-batteries-included-preprocessor": {
-            "@cypress/webpack-preprocessor": "8.0.0"
+    "packageManager": "pnpm@12.13.0",
+    "devEngines": {
+        "runtime": {
+            "name": "node",
+            "version": "24.21.0",
+            "onFail": "download"
         }
     }
 }

@@ -74,30 +74,31 @@ Accessibility is a hard requirement, not optional:
 - Do not extract constants, helpers, or abstractions unless they are directly needed by the current task.
 - If a change causes unrelated lint or type errors, fix only the minimum required to resolve them — do not take the opportunity to clean up the file.
 - Prefer editing existing files over creating new ones.
-- **After completing any task, always run `npm run lint` and `npm run format` to ensure the code is clean before finishing.** Fix any issues reported before considering the task done.
+- **After completing any task, always run `pnpm run lint` and `pnpm run format` to ensure the code is clean before finishing.** Fix any issues reported before considering the task done.
 
 ---
 
 ## 3. Tech Stack
 
-| Layer                   | Technology                                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------------------------- |
-| Framework               | Next.js (App Router, `output: "export"`)                                                                |
-| Language                | TypeScript (strict, ES2022)                                                                             |
-| UI                      | Tailwind CSS v4 + shadcn/ui + `@base-ui/react`                                                          |
-| Icons                   | lucide-react (general UI icons) + `@icons-pack/react-simple-icons` (brand/social icons)                 |
-| Dark Mode               | next-themes (`class` strategy)                                                                          |
-| Animation               | motion (v12) + tw-animate-css                                                                           |
-| Blog                    | MDX + rehype-pretty-code (Dracula / GitHub Light themes)                                                |
-| Images                  | next-image-export-optimizer (custom loader)                                                             |
-| PWA                     | next-pwa                                                                                                |
-| Error Tracking          | Sentry (`@sentry/nextjs`)                                                                               |
-| E2E / Component Testing | Cypress + @testing-library/cypress                                                                      |
-| Unit Testing            | Jest via `next/jest` (pure logic, no DOM)                                                               |
-| Code Coverage           | NYC/Istanbul (Cypress suites); Jest `--coverage` (unit suite)                                           |
-| Linting                 | ESLint + Stylelint                                                                                      |
-| Formatting              | Prettier (+ `organize-imports` and `tailwindcss` plugins: imports and Tailwind classes are auto-sorted) |
-| Git Hooks               | Husky + lint-staged                                                                                     |
+| Layer                   | Technology                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Framework               | Next.js (App Router, `output: "export"`)                                                                                       |
+| Language                | TypeScript (strict, ES2022)                                                                                                    |
+| UI                      | Tailwind CSS v4 + shadcn/ui + `@base-ui/react`                                                                                 |
+| Icons                   | lucide-react (general UI icons) + `@icons-pack/react-simple-icons` (brand/social icons)                                        |
+| Dark Mode               | next-themes (`class` strategy)                                                                                                 |
+| Animation               | motion (v12) + tw-animate-css                                                                                                  |
+| Blog                    | MDX + rehype-pretty-code (Dracula / GitHub Light themes)                                                                       |
+| Images                  | next-image-export-optimizer (custom loader)                                                                                    |
+| PWA                     | next-pwa                                                                                                                       |
+| Error Tracking          | Sentry (`@sentry/nextjs`)                                                                                                      |
+| E2E / Component Testing | Cypress + @testing-library/cypress                                                                                             |
+| Unit Testing            | Jest via `next/jest` (pure logic, no DOM)                                                                                      |
+| Code Coverage           | NYC/Istanbul (Cypress suites); Jest `--coverage` (unit suite)                                                                  |
+| Package Manager         | pnpm (version in `packageManager`, Node.js in `devEngines.runtime`, both in `package.json`; settings in `pnpm-workspace.yaml`) |
+| Linting                 | ESLint + Stylelint                                                                                                             |
+| Formatting              | Prettier (+ `organize-imports` and `tailwindcss` plugins: imports and Tailwind classes are auto-sorted)                        |
+| Git Hooks               | Husky + lint-staged                                                                                                            |
 
 Full dependency list: [`package.json`](./package.json)
 Full Next.js config: [`next.config.mjs`](./next.config.mjs)
@@ -158,26 +159,28 @@ Always use these aliases in imports — never relative `../../` paths.
 ## 5. Development Commands
 
 ```bash
-npm run dev                  # http://localhost:3000 — NODE_ENV=development
-npm run build                # Production build (static export to out/) + image optimization
-npm run start                # Build + serve the static output locally
-npm run lint                 # ESLint + Stylelint (lint:ts / lint:css for one of them)
-npm run format               # Apply Prettier formatting
-npm run test:unit            # Jest unit tests (test:unit:coverage adds coverage)
-npm run build:analyze        # Bundle analysis report after build
+pnpm run dev                  # http://localhost:3000 — NODE_ENV=development
+pnpm run build                # Production build (static export to out/) + image optimization
+pnpm run start                # Build + serve the static output locally
+pnpm run lint                 # ESLint + Stylelint (lint:ts / lint:css for one of them)
+pnpm run format               # Apply Prettier formatting
+pnpm run test:unit            # Jest unit tests (test:unit:coverage adds coverage)
+pnpm run build:analyze        # Bundle analysis report after build
 ```
 
 E2E and component test commands, the local test server and coverage instrumentation are documented in the project skills for running and writing tests.
 
 **Before committing:** lint-staged runs automatically via Husky on staged files — ESLint fix + Stylelint fix + Prettier write. Do not skip hooks (`--no-verify`).
 
-**Installing dependencies:** Use `npm ci` (not `npm install`) in CI and when reproducing CI behavior locally.
+**Installing dependencies:** Use `pnpm install --frozen-lockfile` (not a bare `pnpm install`) in CI and when reproducing CI behavior locally.
 
-**Never hand-edit `package-lock.json`.** It is only ever regenerated by running npm itself (`npm install`, `npm ci`, `npm update <pkg>`). Editing it directly desyncs its integrity hashes and resolved tree from what npm would actually produce.
+**Node.js is installed by pnpm, not by `actions/setup-node`.** The version is pinned in `devEngines.runtime` in `package.json` (and recorded in `pnpm-lock.yaml`); `pnpm/setup` reads it in CI. Change the Node version there only. A CI job that checks out sparsely must include `package.json` for `pnpm/setup` to find it. `wrangler` is a devDependency only so `cloudflare/wrangler-action` finds it pre-installed: otherwise it runs `pnpm add wrangler` from `_site`, which mutates the root `package.json` and lockfile.
 
-**Never run forced/destructive dependency commands** (`npm audit fix --force` and anything else that rewrites the tree past declared ranges) without explicit approval. If one seems warranted, propose it with reasoning and wait for a yes.
+**Never hand-edit `pnpm-lock.yaml`.** It is only ever regenerated by running pnpm itself (`pnpm install`, `pnpm update <pkg>`). Editing it directly desyncs its integrity hashes and resolved tree from what pnpm would actually produce.
 
-**Prefer `npm run <script>` over `npx <tool>` whenever a script covers it**, even for one-off local runs (e.g. `npm run cypress:component:run -- --spec <path>`): this keeps local runs on the same flags/env as CI. If no script covers it, fall back to `npx`/the raw binary and don't add a script for a single run; add one only once a command has genuinely come up repeatedly (`npx shadcn add` stays `npx` since each call targets a different component; the coverage instrumentation became `npm run instrument`).
+**Never run forced/destructive dependency commands** (`pnpm audit --fix` and anything else that rewrites the tree past declared ranges) without explicit approval. If one seems warranted, propose it with reasoning and wait for a yes.
+
+**Prefer `pnpm run <script>` over `pnpm dlx <tool>` / `pnpm exec <tool>` whenever a script covers it**, even for one-off local runs (e.g. `pnpm run cypress:component:run --spec <path>`): this keeps local runs on the same flags/env as CI. pnpm forwards a literal `--` to the script, so pass extra arguments without it. If no script covers it, fall back to `pnpm exec`/`pnpm dlx`/the raw binary and don't add a script for a single run; add one only once a command has genuinely come up repeatedly (`pnpm dlx shadcn add` stays `pnpm dlx` since each call targets a different component; the coverage instrumentation became `pnpm run instrument`).
 
 ---
 
@@ -189,7 +192,7 @@ Every source file (`.ts`, `.tsx`, `.css`, `.mdx`) must start with the copyright 
 
 **`.mdx` files** cannot use the block comment below (Prettier mangles it and the MDX parser rejects HTML comments); they use a JS-export wrapper (`export const _copyright = /* … */ undefined;`) as the very first thing in the file. Copy it from an existing `page.mdx`.
 
-**Exception:** files under `shadcn/ui/` and `shadcn/lib/` (excluding their hand-written `index.tsx`/`index.ts` barrels) are CLI output — do not add the copyright header to them, and do not rename them to PascalCase. Use whatever `npx shadcn add` generates, verbatim.
+**Exception:** files under `shadcn/ui/` and `shadcn/lib/` (excluding their hand-written `index.tsx`/`index.ts` barrels) are CLI output — do not add the copyright header to them, and do not rename them to PascalCase. Use whatever `pnpm dlx shadcn add` generates, verbatim.
 
 **`.ts`, `.tsx`, `.css` files** — standard block comment:
 
@@ -336,6 +339,10 @@ Co-located styles live alongside the file that owns them, named to match the imp
 ---
 
 ## 9. Known Gotchas
+
+### pnpm's `node_modules` is strict, and dependency build scripts need approval
+
+Only packages declared in `package.json` can be imported (no npm-style hoisting), so declare every imported package as a dependency; never work around it with `public-hoist-pattern` or `shamefully-hoist`. pnpm also refuses to install when a dependency has an unreviewed build script (`ERR_PNPM_IGNORED_BUILDS`); approve it in `allowBuilds` in [`pnpm-workspace.yaml`](./pnpm-workspace.yaml), which also holds the `overrides`.
 
 ### CSP `unsafe-eval` is only added in development and test
 
