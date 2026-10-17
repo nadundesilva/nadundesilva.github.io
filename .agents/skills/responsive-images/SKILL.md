@@ -7,7 +7,7 @@ description: "Rules for rendering images and logos in this repo: which Image com
 
 ## Image Handling
 
-Always import `Image` from `next-image-export-optimizer`, not from `next/image`. Source images live in `assets/` and are imported as static modules (e.g. `import img from "@/assets/foo.webp"`). Optimized WebP output is written to `out/optimized-images/` during `npm run build`.
+Always import `Image` from `next-image-export-optimizer`, not from `next/image`. Source images live in `assets/` and are imported as static modules (e.g. `import img from "@/assets/foo.webp"`). Optimized WebP output is written to `out/optimized-images/` during `pnpm run build`.
 
 **Metadata images use the optimized variant, never the original.** og:image, twitter:image, JSON-LD `image`, RSS enclosures and icons must go through `getOptimizedImage()` from `utils/common/image-metadata.ts` rather than `StaticImageData.src`. Originals under `_next/static/media` are otherwise fetched at full size and (for raster images) are excluded from the PWA precache in `next.config.mjs` (`buildExcludes`). `getOptimizedImage` mirrors the optimizer's `-opt-<width>.WEBP` naming, which the library doesn't expose — the `seo.cy.tsx` image-fetch tests catch drift.
 

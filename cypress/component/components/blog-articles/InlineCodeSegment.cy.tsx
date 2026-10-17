@@ -24,11 +24,11 @@ describe("InlineCodeSegment", () => {
     it("concatenates multiple children into a single code segment", () => {
         cy.mount(
             <InlineCodeSegment>
-                {"npm"}
+                {"pnpm"}
                 {" install"}
             </InlineCodeSegment>,
         );
 
-        cy.get("code").should("have.text", "npm install");
+        cy.get("code").should("have.text", "pnpm install");
     });
 });

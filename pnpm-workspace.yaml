@@ -1,0 +1,10 @@
+overrides:
+    "@cypress/webpack-batteries-included-preprocessor>@cypress/webpack-preprocessor": "8.0.0"
+allowBuilds:
+    "@parcel/watcher": true
+    "@sentry/cli": true
+    cypress: true
+    esbuild: true
+    fsevents: true
+    unrs-resolver: true
+    workerd: true

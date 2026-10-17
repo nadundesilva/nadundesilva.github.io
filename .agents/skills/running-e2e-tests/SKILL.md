@@ -7,27 +7,27 @@ description: "How to run the Cypress E2E and component suites, against the stati
 
 ## Run against the production static export, never the dev server
 
-Running `npm run cypress:e2e:run` while the Next.js dev server (`npm run dev`) is active produces intermittent and persistent failures. The root cause is HMR: in dev mode, the hot-update mechanism fires immediately after soft-navigation RSC fetches, causing the router to treat its tree as stale and abort `pushState`. The URL never updates, so `cy.location("pathname")` assertions time out. MDX article pages are especially susceptible because they trigger more HMR work (images, nested layouts, more code paths).
+Running `pnpm run cypress:e2e:run` while the Next.js dev server (`pnpm run dev`) is active produces intermittent and persistent failures. The root cause is HMR: in dev mode, the hot-update mechanism fires immediately after soft-navigation RSC fetches, causing the router to treat its tree as stale and abort `pushState`. The URL never updates, so `cy.location("pathname")` assertions time out. MDX article pages are especially susceptible because they trigger more HMR work (images, nested layouts, more code paths).
 
 **Always stop the dev server before running Cypress.** Quick local flow, no coverage:
 
 ```bash
-npm run build
-npm run serve -- -l 3000 &
-npm run cypress:e2e:run      # headless
-# npm run cypress:open       # interactive UI (pick E2E testing)
+pnpm run build
+pnpm run serve -l 3000 &
+pnpm run cypress:e2e:run      # headless
+# pnpm run cypress:open       # interactive UI (pick E2E testing)
 ```
 
 ## Runtime, browsers and narrowing a run
 
-- A full E2E run is slow (it runs against an instrumented, unminified build) and the component suite is much faster, but either can outlast a foreground shell command's time limit. Run the full suite in the background, or narrow it: `npm run cypress:e2e:run -- --spec cypress/e2e/<name>.cy.tsx`.
-- CI runs electron, chrome, firefox and edge, each independently (`fail-fast: false`). Locally, pick one with `npm run cypress:e2e:run -- --browser firefox`; a failure that only reproduces in CI is often browser-specific.
+- A full E2E run is slow (it runs against an instrumented, unminified build) and the component suite is much faster, but either can outlast a foreground shell command's time limit. Run the full suite in the background, or narrow it: `pnpm run cypress:e2e:run --spec cypress/e2e/<name>.cy.tsx`.
+- CI runs electron, chrome, firefox and edge, each independently (`fail-fast: false`). Locally, pick one with `pnpm run cypress:e2e:run --browser firefox`; a failure that only reproduces in CI is often browser-specific.
 
 ## Running component tests
 
 ```bash
-npm run cypress:component:run                 # no server needed
-npm run cypress:component:run -- --headed     # for specs that assert hover-driven CSS
+pnpm run cypress:component:run                 # no server needed
+pnpm run cypress:component:run --headed     # for specs that assert hover-driven CSS
 ```
 
 CI runs component tests headed: headless Chrome and Edge report `hover: none`, which breaks any assertion on hover-driven CSS, whereas headed mode reports `hover: hover`. Run those specs headed locally too (it needs a display).
@@ -37,10 +37,10 @@ CI runs component tests headed: headless Chrome and Edge report `hover: none`, w
 Mirrors the `run-e2e-tests` job in `.github/workflows/deploy-site.yaml`. Use it when a spec depends on the real hostname/TLS/headers (e.g. `security.cy.tsx`) or when reproducing a CI-only failure.
 
 ```bash
-BUILD_TYPE=test NODE_ENV=development npm run instrument
-BUILD_TYPE=test NODE_ENV=development npm run build
+BUILD_TYPE=test NODE_ENV=development pnpm run instrument
+BUILD_TYPE=test NODE_ENV=development pnpm run build
 WEBSITE_BUILD_DIR=out source .github/scripts/start-server.sh
-CYPRESS_BASE_URL=https://nadundesilva.com npm run cypress:e2e:run
+CYPRESS_BASE_URL=https://nadundesilva.com pnpm run cypress:e2e:run
 bash .github/scripts/stop-server.sh
 ```
 
@@ -48,7 +48,7 @@ bash .github/scripts/stop-server.sh
 - The Caddyfile includes every header under the `/*` pattern of `${WEBSITE_BUILD_DIR}/_headers`, so security headers match production.
 - `.github/scripts/stop-server.sh` runs `docker stop`/`docker rm` on `caddy-server`.
 - **`start-server.sh` must be run with `source`, not `bash`** — the exported `NODE_EXTRA_CA_CERTS` must survive into the calling shell. In CI it is also written to `GITHUB_ENV`, since the export dies with the step.
-- **`npm run instrument` rewrites source files in place** (`nyc instrument --in-place`) — it mutates `.ts`/`.tsx` files under version control. Only run it when coverage numbers are needed, and revert the instrumented files afterwards (`git checkout -- <files>`); never leave them in the working tree.
+- **`pnpm run instrument` rewrites source files in place** (`nyc instrument --in-place`) — it mutates `.ts`/`.tsx` files under version control. Only run it when coverage numbers are needed, and revert the instrumented files afterwards (`git checkout -- <files>`); never leave them in the working tree.
 - Each run appends another line to `/etc/hosts`; remove stale `nadundesilva.com` entries when done.
 - **Restart the server after every rebuild.** `next build` deletes and recreates `out/` (`fs.rm(outDir)` in Next's export step), while the container bind-mounts that directory, so Docker keeps serving the old, deleted one. Run `stop-server.sh`, then `source start-server.sh` again.
 - **`BUILD_TYPE=test` changes the build**: it disables the PWA service worker and Sentry, leaves the bundle unminified (readable stack traces), and adds `'unsafe-eval'` to the CSP. For that reason `security.cy.tsx` can only assert that CSP directives are _included_; the exact production policy is pinned in `utils/common/csp.test.ts`.

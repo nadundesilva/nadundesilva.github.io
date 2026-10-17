@@ -125,7 +125,7 @@ start_server() {
         -v "${SERVER_KEY}:/etc/caddy/server.key" \
         -v "$(realpath "${WEBSITE_BUILD_DIR}"):/srv" \
         caddy:alpine
-    npx wait-on -t 10000 -i 1000 --verbose https://nadundesilva.com
+    pnpm dlx wait-on -t 10000 -i 1000 --verbose https://nadundesilva.com
 }
 
 trust_tls_cert() {
